@@ -3,11 +3,51 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TransferNabız — Transfer Haberleri</title>
-<meta name="description" content="Güncel transfer haberleri, resmi açıklamalar ve piyasa değeri analizleri." />
+<title>TransferNabız — Son Dakika Transfer Haberleri, TransferMerkezi ve Canlı Skor</title>
+<meta name="description" content="Süper Lig ve Avrupa liglerinden son dakika transfer haberleri, resmi açıklamalar, TransferMerkezi'nde tamamlanan transferler ve canlı maç skorları tek sayfada." />
+<meta name="keywords" content="transfer haberleri, son dakika transfer, süper lig transfer, galatasaray transfer, fenerbahçe transfer, beşiktaş transfer, trabzonspor transfer, canlı skor, transfer merkezi" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="author" content="TransferNabız" />
+<meta name="theme-color" content="#1E293B" />
+<link rel="canonical" href="https://redrumania19.github.io/transfer-nabiz/" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231E293B'/%3E%3Ccircle cx='70' cy='30' r='12' fill='%23DC2626'/%3E%3Ctext x='50' y='68' font-size='46' font-family='Georgia,serif' font-weight='700' fill='white' text-anchor='middle'%3ETN%3C/text%3E%3C/svg%3E" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="TransferNabız" />
+<meta property="og:url" content="https://redrumania19.github.io/transfer-nabiz/" />
+<meta property="og:title" content="TransferNabız — Son Dakika Transfer Haberleri ve Canlı Skor" />
+<meta property="og:description" content="Süper Lig ve Avrupa liglerinden son dakika transfer haberleri, TransferMerkezi'nde tamamlanan transferler ve canlı maç skorları tek sayfada." />
+<meta property="og:image" content="https://redrumania19.github.io/transfer-nabiz/og-image.png" />
+<meta property="og:locale" content="tr_TR" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TransferNabız — Son Dakika Transfer Haberleri ve Canlı Skor" />
+<meta name="twitter:description" content="Süper Lig ve Avrupa liglerinden son dakika transfer haberleri, TransferMerkezi ve canlı maç skorları." />
+<meta name="twitter:image" content="https://redrumania19.github.io/transfer-nabiz/og-image.png" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsMediaOrganization",
+  "name": "TransferNabız",
+  "url": "https://redrumania19.github.io/transfer-nabiz/",
+  "logo": "https://redrumania19.github.io/transfer-nabiz/og-image.png",
+  "description": "Süper Lig ve Avrupa liglerinden son dakika transfer haberleri, TransferMerkezi ve canlı maç skorları."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "TransferNabız",
+  "url": "https://redrumania19.github.io/transfer-nabiz/",
+  "inLanguage": "tr"
+}
+</script>
 <style>
   :root{
     --color-primary:#1E293B;
@@ -565,9 +605,34 @@
 
   function photoLayer(item){
     if(!item.image) return '';
-    return `<img src="${esc(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"
+    return `<img src="${esc(item.image)}" alt="${esc(item.title || item.player || '')}" loading="lazy" referrerpolicy="no-referrer"
       style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;"
       onerror="this.remove()" />`;
+  }
+
+  function renderNewsStructuredData(){
+    const items = [HERO_ITEM, ...NEWS_ITEMS];
+    const ld = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": items.map((n, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "item": {
+          "@type": "NewsArticle",
+          "headline": n.title,
+          "description": n.summary || n.lede || '',
+          "image": n.image ? [n.image] : undefined,
+          "datePublished": NEWS_META.generatedAt,
+          "author": { "@type": "Organization", "name": "TransferNabız" },
+          "publisher": { "@type": "Organization", "name": "TransferNabız" }
+        }
+      }))
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(ld);
+    document.head.appendChild(script);
   }
 
   function renderGrid(filter){
@@ -674,6 +739,7 @@
   renderUpdatedBadge();
   renderMarketSummary();
   initTransferMerkezi();
+  renderNewsStructuredData();
 
   /* Article reader: keep the reader in-site instead of sending clicks to the source */
   const ALL_ITEMS = {
