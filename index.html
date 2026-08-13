@@ -358,7 +358,8 @@
         </div>
         <a class="hero-media" href="${esc(h.source.url)}" target="_blank" rel="noopener noreferrer">
           ${clubVisual(h.to)}
-          <span class="mv">${esc(h.from)} → ${esc(h.to)} · ${esc(h.marketValue)}</span>
+          ${photoLayer(h)}
+          <span class="mv" style="z-index:2;">${esc(h.from)} → ${esc(h.to)} · ${esc(h.marketValue)}</span>
         </a>
       </div>
       <aside>
@@ -366,7 +367,7 @@
           ${SIDE_ITEMS.map(s => `
             <div class="side-item">
               <a href="${esc(s.source.url)}" target="_blank" rel="noopener noreferrer" style="display:flex;gap:14px;">
-                <span class="side-thumb">${clubVisual(s.title.split(/[,']/)[0].trim())}</span>
+                <span class="side-thumb">${clubVisual(s.title.split(/[,']/)[0].trim())}${photoLayer(s)}</span>
                 <span>
                   <h3>${esc(s.title)}</h3>
                   <span class="meta">${esc(s.meta)} · ${esc(s.source.name)}</span>
@@ -426,6 +427,13 @@
       </div>`;
   }
 
+  function photoLayer(item){
+    if(!item.image) return '';
+    return `<img src="${esc(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;"
+      onerror="this.remove()" />`;
+  }
+
   function renderGrid(filter){
     const grid = document.getElementById('newsGrid');
     const items = filter === 'all' ? NEWS_ITEMS : NEWS_ITEMS.filter(n => n.status === filter);
@@ -433,7 +441,8 @@
       <a class="card" href="${esc(n.source.url)}" target="_blank" rel="noopener noreferrer">
         <div class="card-media">
           ${clubVisual(n.to)}
-          <span class="${badgeClass(n.status)}" style="${n.status !== 'resmi' ? 'background:var(--color-background)' : ''}">${esc(n.statusLabel)}</span>
+          ${photoLayer(n)}
+          <span class="${badgeClass(n.status)}" style="z-index:2;${n.status !== 'resmi' ? 'background:var(--color-background)' : ''}">${esc(n.statusLabel)}</span>
         </div>
         <div class="card-body">
           <h3>${esc(n.title)}</h3>
