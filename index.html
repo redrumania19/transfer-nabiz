@@ -261,6 +261,27 @@
   }
   .live-error{color:var(--color-accent);border-color:var(--color-accent);}
 
+  /* Transfer Merkezi */
+  .tm-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;}
+  .tm-select{
+    border:1px solid var(--color-border);background:var(--color-muted);color:var(--color-foreground);
+    border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;min-width:180px;
+  }
+  .tm-table-wrap{border:1px solid var(--color-border);border-radius:12px;overflow:hidden;overflow-x:auto;}
+  table.tm{width:100%;border-collapse:collapse;font-size:14px;min-width:560px;}
+  table.tm thead th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--color-secondary);
+    font-weight:600;padding:12px 16px;background:var(--color-muted);border-bottom:1px solid var(--color-border);
+  }
+  table.tm td{padding:12px 16px;border-bottom:1px solid var(--color-border);vertical-align:middle;}
+  table.tm tbody tr:last-child td{border-bottom:none;}
+  table.tm tbody tr:hover{background:var(--color-muted);}
+  table.tm .tm-player{font-weight:700;}
+  table.tm .tm-club{color:var(--color-secondary);}
+  table.tm .tm-arrow{color:var(--color-secondary);padding:0 6px;}
+  table.tm .tm-fee{text-align:right;font-weight:700;color:var(--color-accent);white-space:nowrap;}
+  .tm-empty{padding:28px;text-align:center;font-size:13px;color:var(--color-secondary);}
+
   /* Article modal */
   .article-overlay{
     position:fixed;inset:0;background:rgba(8,12,20,.72);backdrop-filter:blur(2px);
@@ -315,9 +336,9 @@
       <a href="#gundem" class="active">Gündem</a>
       <a href="#canli-skor">Canlı Skor</a>
       <a href="#sicak-gelismeler">Sıcak Gelişmeler</a>
+      <a href="#transfer-merkezi">TransferMerkezi</a>
       <a href="#piyasa">Piyasa Değeri</a>
       <a href="#kulupler">Kulüpler</a>
-      <a href="#analiz">Analiz</a>
     </nav>
     <div style="display:flex;align-items:center;gap:12px;">
       <button class="theme-toggle" id="themeToggle" aria-pressed="false">
@@ -359,6 +380,26 @@
     </div>
 
     <div class="grid" id="newsGrid"></div>
+  </section>
+
+  <section class="section wrap" id="transfer-merkezi">
+    <div class="tm-head">
+      <div>
+        <h2 class="font-display">TransferMerkezi</h2>
+        <p style="margin:4px 0 0;font-size:13px;color:var(--color-secondary);">Sonuçlanan (resmi) transferleri kulüp bazında filtreleyerek görüntüleyin.</p>
+      </div>
+      <select class="tm-select" id="tmClubFilter">
+        <option value="all">Tüm Kulüpler</option>
+      </select>
+    </div>
+    <div class="tm-table-wrap">
+      <table class="tm">
+        <thead>
+          <tr><th>Oyuncu</th><th>Eski Takım</th><th></th><th>Yeni Takım</th><th style="text-align:right">Bonservis</th></tr>
+        </thead>
+        <tbody id="tmTableBody"></tbody>
+      </table>
+    </div>
   </section>
 
   <section class="section wrap" id="piyasa">
@@ -589,11 +630,50 @@
     renderGrid(chip.dataset.filter);
   });
 
+  /* TransferMerkezi: completed-transfer table, filterable by club (sporx.com/transfermerkezi tarzı) */
+  const TRANSFER_TABLE = Array.from(
+    new Map(
+      [HERO_ITEM, ...SIDE_ITEMS, ...NEWS_ITEMS]
+        .filter(i => i.status === 'resmi' && i.player)
+        .map(i => [i.player, i])
+    ).values()
+  );
+
+  function renderTransferMerkezi(club){
+    const rows = club === 'all' ? TRANSFER_TABLE : TRANSFER_TABLE.filter(t => t.from === club || t.to === club);
+    const body = document.getElementById('tmTableBody');
+    if(!rows.length){
+      body.innerHTML = `<tr><td colspan="5" class="tm-empty">Bu kulüp için sonuçlanan transfer bulunamadı.</td></tr>`;
+      return;
+    }
+    body.innerHTML = rows.map(t => `
+      <tr>
+        <td class="tm-player"><a href="${esc(t.source.url)}" target="_blank" rel="noopener noreferrer" data-article-id="${esc(t._id)}">${esc(t.player)}</a></td>
+        <td class="tm-club">${esc(t.from)}</td>
+        <td class="tm-arrow">→</td>
+        <td class="tm-club">${esc(t.to)}</td>
+        <td class="tm-fee">${esc(t.fee || '—')}</td>
+      </tr>`).join('');
+  }
+
+  function initTransferMerkezi(){
+    HERO_ITEM._id = 'hero';
+    SIDE_ITEMS.forEach((s, i) => s._id = 'side-' + i);
+    NEWS_ITEMS.forEach((n, i) => n._id = 'grid-' + i);
+
+    const clubs = Array.from(new Set(TRANSFER_TABLE.flatMap(t => [t.from, t.to]))).sort((a, b) => a.localeCompare(b, 'tr'));
+    const select = document.getElementById('tmClubFilter');
+    select.insertAdjacentHTML('beforeend', clubs.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join(''));
+    select.addEventListener('change', () => renderTransferMerkezi(select.value));
+    renderTransferMerkezi('all');
+  }
+
   renderTicker();
   renderHero();
   renderGrid('all');
   renderUpdatedBadge();
   renderMarketSummary();
+  initTransferMerkezi();
 
   /* Article reader: keep the reader in-site instead of sending clicks to the source */
   const ALL_ITEMS = {
