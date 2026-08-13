@@ -108,6 +108,7 @@
     aspect-ratio:16/10;border-radius:12px;
     background:linear-gradient(135deg,var(--color-primary),#0f1b2e 65%);
     position:relative;overflow:hidden;margin-top:16px;
+    display:block;cursor:pointer;
   }
   .hero-media svg{position:absolute;inset:0;width:100%;height:100%;opacity:.5;}
   .hero-media .mv{
@@ -127,7 +128,7 @@
   .side-item:first-child{padding-top:0;}
   .side-thumb{
     width:76px;height:76px;flex:none;border-radius:8px;background:var(--color-muted);
-    border:1px solid var(--color-border);
+    border:1px solid var(--color-border);position:relative;overflow:hidden;display:block;
   }
   .side-item h3{font-size:15px;line-height:1.35;margin:0 0 6px;font-weight:600;}
   .side-item .meta{font-size:12px;color:var(--color-secondary);}
@@ -355,20 +356,17 @@
           <span class="avatar"></span>
           <span><strong>${esc(h.byline)}</strong> · Kaynak: <a href="${esc(h.source.url)}" target="_blank" rel="noopener noreferrer">${esc(h.source.name)}</a></span>
         </div>
-        <div class="hero-media">
-          <svg viewBox="0 0 400 250" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="330" cy="40" r="120" fill="#DC2626" opacity="0.25"/>
-            <circle cx="60" cy="210" r="90" fill="#ffffff" opacity="0.06"/>
-          </svg>
+        <a class="hero-media" href="${esc(h.source.url)}" target="_blank" rel="noopener noreferrer">
+          ${clubVisual(h.to)}
           <span class="mv">${esc(h.from)} → ${esc(h.to)} · ${esc(h.marketValue)}</span>
-        </div>
+        </a>
       </div>
       <aside>
         <div class="side-list">
           ${SIDE_ITEMS.map(s => `
             <div class="side-item">
               <a href="${esc(s.source.url)}" target="_blank" rel="noopener noreferrer" style="display:flex;gap:14px;">
-                <span class="side-thumb"></span>
+                <span class="side-thumb">${clubVisual(s.title.split(/[,']/)[0].trim())}</span>
                 <span>
                   <h3>${esc(s.title)}</h3>
                   <span class="meta">${esc(s.meta)} · ${esc(s.source.name)}</span>
@@ -385,12 +383,58 @@
     return 'badge muted';
   }
 
+  const GENERIC_NAMES = new Set(['Çeşitli Kulüpler', 'Serbest', '?']);
+
+  function hashHue(str){
+    let h = 0;
+    for(let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h % 360;
+  }
+
+  function initialsOf(name){
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  function clubVisual(name){
+    const hue = hashHue(name || 'TN');
+    const hue2 = (hue + 42) % 360;
+    const gradId = 'g' + Math.abs(hue);
+    const ballIcon = `<svg viewBox="0 0 64 64" width="46" height="46" fill="none" stroke="#fff" stroke-width="2" opacity="0.85">
+      <circle cx="32" cy="32" r="26"/>
+      <path d="M32 14l11 8-4 13H25l-4-13z" fill="#fff" opacity="0.9"/>
+      <path d="M32 14V6M43 22l7-5M21 22l-7-5M28 35l-9 12M36 35l9 12M25 47h14" stroke-linecap="round"/>
+    </svg>`;
+    const badgeContent = GENERIC_NAMES.has(name)
+      ? ballIcon
+      : `<span style="font-family:var(--font-display);font-weight:700;font-size:22px;color:#fff;letter-spacing:.02em;">${esc(initialsOf(name))}</span>`;
+    return `
+      <svg viewBox="0 0 400 225" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;">
+        <defs>
+          <linearGradient id="${gradId}" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="hsl(${hue},55%,28%)"/>
+            <stop offset="100%" stop-color="hsl(${hue2},60%,18%)"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="225" fill="url(#${gradId})"/>
+        <circle cx="360" cy="20" r="90" fill="#fff" opacity="0.06"/>
+        <circle cx="10" cy="210" r="70" fill="#fff" opacity="0.05"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
+          ${badgeContent}
+        </div>
+      </div>`;
+  }
+
   function renderGrid(filter){
     const grid = document.getElementById('newsGrid');
     const items = filter === 'all' ? NEWS_ITEMS : NEWS_ITEMS.filter(n => n.status === filter);
     grid.innerHTML = items.map(n => `
-      <article class="card">
-        <div class="card-media"><span class="${badgeClass(n.status)}" style="${n.status !== 'resmi' ? 'background:var(--color-background)' : ''}">${esc(n.statusLabel)}</span></div>
+      <a class="card" href="${esc(n.source.url)}" target="_blank" rel="noopener noreferrer">
+        <div class="card-media">
+          ${clubVisual(n.to)}
+          <span class="${badgeClass(n.status)}" style="${n.status !== 'resmi' ? 'background:var(--color-background)' : ''}">${esc(n.statusLabel)}</span>
+        </div>
         <div class="card-body">
           <h3>${esc(n.title)}</h3>
           <p>${esc(n.summary)}</p>
@@ -399,10 +443,10 @@
             <span class="prob"><span class="bar"><span style="width:${n.probability}%"></span></span>${n.probability}%</span>
           </div>
           <div class="card-foot" style="border-top:none;padding-top:0;">
-            <a href="${esc(n.source.url)}" target="_blank" rel="noopener noreferrer" style="font-weight:600;">Kaynak: ${esc(n.source.name)}</a>
+            <span style="font-weight:600;color:var(--color-accent);">Kaynak: ${esc(n.source.name)} ↗</span>
           </div>
         </div>
-      </article>`).join('');
+      </a>`).join('');
   }
 
   function renderUpdatedBadge(){
