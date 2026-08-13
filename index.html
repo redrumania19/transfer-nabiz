@@ -222,6 +222,45 @@
     .foot-grid{grid-template-columns:1fr;}
   }
 
+  /* Live scores */
+  .live-section{padding:32px 0 8px;}
+  .live-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .live-head h2{font-size:20px;margin:0;display:flex;align-items:center;gap:8px;}
+  .live-dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:pulse 1.6s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(34,197,94,.55);}
+    70%{box-shadow:0 0 0 8px rgba(34,197,94,0);}
+    100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}
+  }
+  .live-refresh{
+    display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-secondary);
+  }
+  .live-refresh button{
+    border:1px solid var(--color-border);background:var(--color-muted);color:var(--color-foreground);
+    border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;
+  }
+  .live-refresh button:hover{border-color:var(--color-accent);}
+  .live-row{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin;}
+  .live-card{
+    flex:none;width:220px;border:1px solid var(--color-border);border-radius:12px;padding:14px;
+    background:var(--color-background);
+  }
+  .live-card .league{font-size:11px;color:var(--color-secondary);display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+  .live-card .league img{width:14px;height:14px;object-fit:contain;}
+  .live-card .team{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:600;margin:6px 0;}
+  .live-card .team img{width:20px;height:20px;object-fit:contain;flex:none;}
+  .live-card .team span.name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .live-card .team span.score{font-family:var(--font-display);font-size:16px;}
+  .live-card .minute{
+    margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+    color:#22c55e;
+  }
+  .live-empty, .live-error{
+    font-size:13px;color:var(--color-secondary);border:1px dashed var(--color-border);border-radius:10px;
+    padding:18px;text-align:center;
+  }
+  .live-error{color:var(--color-accent);border-color:var(--color-accent);}
+
   /* Article modal */
   .article-overlay{
     position:fixed;inset:0;background:rgba(8,12,20,.72);backdrop-filter:blur(2px);
@@ -274,6 +313,7 @@
     <a href="#" class="logo"><span class="dot"></span>Transfer<span style="color:var(--color-accent)">Nabız</span></a>
     <nav class="links">
       <a href="#gundem" class="active">Gündem</a>
+      <a href="#canli-skor">Canlı Skor</a>
       <a href="#sicak-gelismeler">Sıcak Gelişmeler</a>
       <a href="#piyasa">Piyasa Değeri</a>
       <a href="#kulupler">Kulüpler</a>
@@ -294,6 +334,17 @@
       <span class="badge muted" id="updatedBadge">Güncelleniyor…</span>
     </div>
     <div class="hero-grid" id="heroGrid"></div>
+  </section>
+
+  <section class="live-section wrap" id="canli-skor">
+    <div class="live-head">
+      <h2 class="font-display"><span class="live-dot" aria-hidden="true"></span>Canlı Skorlar</h2>
+      <div class="live-refresh">
+        <span id="liveUpdatedAt">Yükleniyor…</span>
+        <button id="liveRefreshBtn" type="button">Yenile</button>
+      </div>
+    </div>
+    <div id="liveScoresRow"><div class="live-empty">Canlı maçlar yükleniyor…</div></div>
   </section>
 
   <section class="section wrap" id="sicak-gelismeler">
@@ -605,6 +656,89 @@
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape' && overlay.classList.contains('open')) closeArticle();
   });
+
+  /* Live scores — API-Football (v3.football.api-sports.io), Free plan: 100 requests/day.
+     Key is intentionally client-side per explicit user decision; polling is kept slow
+     and pauses when the tab isn't visible to conserve the daily quota. */
+  const LIVE_API_KEY = '253fbf22c29af00c691d1cfb4fcbc369';
+  const LIVE_ENDPOINT = 'https://v3.football.api-sports.io/fixtures?live=all';
+  const LIVE_POLL_MS = 5 * 60 * 1000; // 5 dakika
+  let liveTimer = null;
+
+  function liveMinuteLabel(status){
+    const s = status.short;
+    if(s === 'HT') return 'Devre Arası';
+    if(s === 'FT' || s === 'AET' || s === 'PEN') return 'Bitti';
+    if(s === 'P') return 'Penaltılar';
+    if(s === 'ET') return `Uzatma ${status.elapsed ?? ''}'`;
+    if(status.elapsed != null) return `${status.elapsed}'`;
+    return status.long || s;
+  }
+
+  function renderLiveScores(matches){
+    const row = document.getElementById('liveScoresRow');
+    if(!matches.length){
+      row.innerHTML = `<div class="live-empty">Şu anda canlı maç yok. ${LIVE_POLL_MS/60000} dakikada bir otomatik kontrol ediliyor.</div>`;
+      return;
+    }
+    row.innerHTML = `<div class="live-row">${matches.map(m => `
+      <div class="live-card">
+        <div class="league">
+          <img src="${esc(m.league.logo)}" alt="" loading="lazy" onerror="this.style.display='none'" />
+          <span>${esc(m.league.name)} · ${esc(m.league.country)}</span>
+        </div>
+        <div class="team">
+          <img src="${esc(m.teams.home.logo)}" alt="" loading="lazy" onerror="this.style.display='none'" />
+          <span class="name">${esc(m.teams.home.name)}</span>
+          <span class="score">${m.goals.home ?? 0}</span>
+        </div>
+        <div class="team">
+          <img src="${esc(m.teams.away.logo)}" alt="" loading="lazy" onerror="this.style.display='none'" />
+          <span class="name">${esc(m.teams.away.name)}</span>
+          <span class="score">${m.goals.away ?? 0}</span>
+        </div>
+        <span class="minute">● ${esc(liveMinuteLabel(m.fixture.status))}</span>
+      </div>`).join('')}</div>`;
+  }
+
+  function fetchLiveScores(){
+    const updatedEl = document.getElementById('liveUpdatedAt');
+    updatedEl.textContent = 'Güncelleniyor…';
+    fetch(LIVE_ENDPOINT, { headers: { 'x-apisports-key': LIVE_API_KEY } })
+      .then(r => r.json())
+      .then(data => {
+        if(data.errors && Object.keys(data.errors).length){
+          const msg = Object.values(data.errors)[0];
+          document.getElementById('liveScoresRow').innerHTML = `<div class="live-error">Canlı skor servisi şu an yanıt vermiyor: ${esc(String(msg))}</div>`;
+          updatedEl.textContent = 'Hata';
+          return;
+        }
+        renderLiveScores(data.response || []);
+        updatedEl.textContent = 'Son güncelleme: ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+      })
+      .catch(() => {
+        document.getElementById('liveScoresRow').innerHTML = `<div class="live-error">Canlı skorlara şu anda ulaşılamıyor.</div>`;
+        updatedEl.textContent = 'Hata';
+      });
+  }
+
+  function startLivePolling(){
+    if(liveTimer) return;
+    liveTimer = setInterval(fetchLiveScores, LIVE_POLL_MS);
+  }
+  function stopLivePolling(){
+    clearInterval(liveTimer);
+    liveTimer = null;
+  }
+
+  document.getElementById('liveRefreshBtn').addEventListener('click', fetchLiveScores);
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden) stopLivePolling();
+    else { fetchLiveScores(); startLivePolling(); }
+  });
+
+  fetchLiveScores();
+  startLivePolling();
 
   const toggle = document.getElementById('themeToggle');
   const icon = document.getElementById('themeIcon');
