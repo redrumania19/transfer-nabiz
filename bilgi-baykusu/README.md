@@ -21,12 +21,37 @@ yerine Artifact olarak yayınlamak gerekir.
 - **Haftalık program**: 7 günlük ders sıralaması (Pazar serbest tekrar günü), çalışılmayan dersler için hatırlatıcı
 - **Derslerim**: 7 ders → ünite → konu ağacı (90 konu), her konu için öğretmen diliyle konu anlatımı, bazı konularda SVG şema, sesli okuma
 - **Günlük sınav**: 20 soru; karışık veya tek ders; çoktan seçmeli + Türkçe'de boşluk doldurma (yazılı) soruları; yanlışlarda anında açıklama ve sınav sonunda "Tekrar Edelim" özeti
-- **Uyarlanabilir zorluk**: sınav başarısına göre ders bazında kolay/orta/zor seviyesi otomatik ayarlanır, elle de değiştirilebilir
+- **Uyarlanabilir seviye motoru**: ders bazında 0-100 sürekli seviye puanı (kolay → orta → zor → 🚀 ileri), ünite bazlı ustalık puanı ve aralıklı tekrar takvimi; sorular zayıf/tekrarı gelmiş ünitelerden seçilir
 - **Yapay zekâ öğretmen**: "Öğretmene Sor" sekmesinde serbest soru-cevap; sınavda her seferinde yeni üretilen sorular; konu anlatımında "Başka Türlü Anlat"
 - **Ödüller**: puanla alınan, veli tarafından tanımlanan ödüller (ör. 15 dk tablet) ve kullanım geçmişi
 - **Rozetler**: 10 rozet, her biri için "nasıl kazanılır" + ilerleme çubuğu
 - **Veli paneli**: PIN korumalı; haftalık rapor (yazdırma/PDF), konu durumları düzenleme, ödül yönetimi, günlük notları, sıfırlama
 - **Diğer**: sesli okuma (TTS), mikrofonla cevap (STT), açık/koyu tema, günlük not defteri, günün cümlesi, konfeti
+
+## Seviye motoru nasıl çalışır
+
+**Ders seviyesi (rating, 0-100).** Her sınavdan sonra o dersin puanı
+`rating += (başarı% − 75) × 0.45 × min(1, soruSayısı/8)` ile güncellenir. Hedef doğruluk
+%75: üstünde kalırsa seviye yavaşça yükselir, altında kalırsa düşer, tam %75'te sabit durur.
+Rating'den seviye türetilir: `<40` kolay, `40-69` orta, `70-89` zor, `≥90` **ileri**.
+İleri seviyede sorular 4. sınıf müfredatının üstünde, çok adımlı üretilir — yani sistem
+çocuk geliştikçe tavana vurmaz. Veli (ya da çocuk) seviyeyi elle de seçebilir; bu rating'i
+o bandın ortasına taşır.
+
+**Ünite ustalığı (0-100) ve aralıklı tekrar.** Sınavdaki her ünite için doğru/yanlış sayısı
+ustalık puanına işlenir: doğru → `score += max(6, (100−score)×0.35)`, yanlış →
+`score = score×0.55 − 5`. Doğru serisi uzadıkça sonraki tekrar aralığı açılır
+(1 → 2 → 4 → 8 → 16 → 30 gün); bir yanlış, üniteyi yarına geri getirir.
+Tekrar tarihi gelen üniteler ana ekranda "🔁 Tekrar Zamanı" kartında toplanır ve tek
+tuşla hedefli tekrar sınavı başlatılır.
+
+**Soru seçimi.** Sınavlar üniteleri rastgele değil önceliğe göre seçer:
+`(100−ustalık)/100 + tekrarıGeldiyse×1.2 + hiçGörülmediyse×0.6 + küçük rastgelelik`.
+Böylece zayıf ve unutulmaya yüz tutmuş üniteler öne çıkar.
+
+**Yapay zekâ de profili görür.** "Öğretmene Sor" ve yapay zekâ soru üretimi, öğrencinin
+ders seviyelerini ve en zayıf 3 ünitesini prompt'ta alır; anlatım ve soru zorluğu buna
+göre ayarlanır.
 
 ## Mimari notlar
 
@@ -54,7 +79,8 @@ capabilities: { "db": {}, "sample": {} }
 | Yol | İçerik |
 |---|---|
 | `progress/<dersId>__<konuId>` | `{ status, updatedAt, subjectId, topicId }` — status: `yok` / `ogreniliyor` / `ogrenildi` / `tekrar` |
-| `levels/<dersId>` | `{ level }` — 1 kolay, 2 orta, 3 zor |
+| `levels/<dersId>` | `{ level, rating }` — rating 0-100 sürekli seviye puanı; level ondan türetilir (1 kolay, 2 orta, 3 zor, 4 ileri) |
+| `mastery/<dersId>__<üniteId>` | `{ score, seen, correct, streak, lastSeen, dueAt }` — ünite ustalığı ve sonraki tekrar tarihi |
 | `meta/stats` | puan, seri, sınav geçmişi, kullanılan ödüller, yazılı soru sayacı |
 | `meta/settings` | veli PIN'i |
 | `sessions/<YYYY-MM-DD>` | o günün çalışma dakikası |

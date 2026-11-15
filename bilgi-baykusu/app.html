@@ -185,7 +185,12 @@
   function todayStr(){ return new Date().toISOString().slice(0,10); }
   function daysAgoStr(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
   function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function tierWord(level){ return level>=3?'zor':level===2?'orta':'kolay'; }
+  function tierWord(level){ return level>=4?'ileri': level===3?'zor': level===2?'orta':'kolay'; }
+  function tierLabel(level){ return level>=4?'🚀 İleri': level===3?'💪 Zor': level===2?'🙂 Orta':'😊 Kolay'; }
+  function levelFromRating(r){ return r>=90?4 : r>=70?3 : r>=40?2 : 1; }
+  function ratingForLevel(level){ return level>=4?95 : level===3?80 : level===2?55 : 25; }
+  // Sınavlarda hedeflenen doğruluk oranı: bunun üstünde kalırsa seviye yükselir, altında düşer.
+  const RATING_TARGET_PCT = 75;
 
   /* ---------- sesli okuma (text-to-speech) ---------- */
   const ttsAvailable = typeof window!=='undefined' && 'speechSynthesis' in window;
@@ -219,7 +224,7 @@
     state.ai = { question:q, answer:'', loading:true, error:null };
     render();
     try{
-      const res = await sampleFn(TEACHER_RULES + '\n\nÖğrencinin sorusu: ' + q, {
+      const res = await sampleFn(TEACHER_RULES + '\n\n' + learnerProfileText() + '\nAnlatımını bu seviyeye göre ayarla.\n\nÖğrencinin sorusu: ' + q, {
         modelTier:'default',
         cache:false,
         onText: ({text})=>{
@@ -246,10 +251,15 @@
     const subj = SUBJECT_BY_ID[subjectId];
     if(!subj) return [];
     const unitNames = unitIds.map(id=>{ const u = subj.units.find(x=>x.id===id); return u && u.name; }).filter(Boolean);
+    const gradeHint = tier==='ileri'
+      ? '4. sınıf müfredatının biraz üstünde, 5. sınıfa hazırlık düzeyinde ve çok adımlı (iki işlem gerektiren) sorular üret.'
+      : `${tier} zorlukta, 4. sınıf düzeyinde sorular üret.`;
+    const weakHint = weakestUnits(3).filter(x=>x.subjectId===subjectId).map(x=>x.unitName);
     const prompt = [
       `4. sınıf (10 yaş) ${subj.name} dersi için ${count} adet çoktan seçmeli soru üret.`,
       unitNames.length ? `Üniteler: ${unitNames.join(' | ')}` : '',
-      `Zorluk seviyesi: ${tier}`,
+      gradeHint,
+      weakHint.length ? `Öğrenci şu ünitelerde zorlanıyor, sorularda bunlara ağırlık ver: ${weakHint.join(', ')}.` : '',
       'Kurallar: Türkçe; MEB 4. sınıf müfredatı seviyesinde; her soruda tam 4 farklı seçenek ve tek doğru cevap; açıklama tek cümle ve çocuğun anlayacağı dilde; sorular birbirinden farklı olsun.',
       'Yalnızca şu JSON yapısını döndür, başka hiçbir şey yazma:',
       '{"questions":[{"q":"soru metni","opts":["secenek1","secenek2","secenek3","secenek4"],"correct":0,"explain":"kisa aciklama"}]}'
@@ -288,12 +298,13 @@
     if(!sampleFn || !state.useAI){ state.quiz = quiz; render(); return; }
     state.quizLoading = true;
     render();
-    const targetSubject = (subjectFilter && subjectFilter!=='all')
-      ? subjectFilter
-      : quiz.questions[randInt(0, quiz.questions.length-1)].subjectId;
+    // Karışık ve tekrar sınavlarında hedef dersi sorulardan seçeriz (tek ders sınavında zaten belli).
+    const named = subjectFilter && subjectFilter!=='all' && SUBJECT_BY_ID[subjectFilter] ? subjectFilter : null;
+    const targetSubject = named || quiz.questions[randInt(0, quiz.questions.length-1)].subjectId;
     const unitIds = [...new Set(quiz.questions.filter(q=>q.subjectId===targetSubject).map(q=>q.unitId))];
+    const fallbackUnits = (SUBJECT_BY_ID[targetSubject].units||[]).slice(0,1).map(u=>u.id);
     const tier = tierWord(state.levels[targetSubject] || 1);
-    const aiQuestions = await generateAIQuestions(targetSubject, unitIds.length?unitIds:[SUBJECT_BY_ID[targetSubject].units[0].id], tier, 8);
+    const aiQuestions = await generateAIQuestions(targetSubject, unitIds.length?unitIds:fallbackUnits, tier, 8);
     if(aiQuestions.length){
       const replaceable = quiz.questions
         .map((q,i)=>({q,i}))
@@ -868,7 +879,8 @@
     { id:'ilk_sinav', emoji:'📝', name:'İlk Sınav', desc:'İlk günlük sınavını tamamladığında kazanılır.', target:1, unit:'', getValue:s=>s.quizCount, cond: s=> s.quizCount>=1 },
     { id:'yildiz', emoji:'🌟', name:'Yıldız Öğrenci', desc:'Herhangi bir sınavda %90 ya da üzeri puan aldığında kazanılır.', target:90, unit:'%', getValue:s=>s.bestScore, cond: s=> s.bestScore>=90 },
     { id:'ilk_yazili', emoji:'✍️', name:'İlk Yazılı Soru', desc:'Bir yazılı (boşluk doldurma) soruyu ilk kez doğru cevapladığında kazanılır.', target:1, unit:'', getValue:s=>s.writtenCorrect, cond: s=> s.writtenCorrect>=1 },
-    { id:'tam_hafta', emoji:'🗓️', name:'Tam Hafta', desc:'Bir hafta içinde programdaki tüm derslerden en az bir konu çalıştığında kazanılır.', target:ALL_PLAN_SUBJECTS.length, unit:'', getValue:s=>s.weekSubjectsCount, cond: s=> s.weekSubjectsCount>=ALL_PLAN_SUBJECTS.length }
+    { id:'tam_hafta', emoji:'🗓️', name:'Tam Hafta', desc:'Bir hafta içinde programdaki tüm derslerden en az bir konu çalıştığında kazanılır.', target:ALL_PLAN_SUBJECTS.length, unit:'', getValue:s=>s.weekSubjectsCount, cond: s=> s.weekSubjectsCount>=ALL_PLAN_SUBJECTS.length },
+    { id:'ileri_seviye', emoji:'🚀', name:'İleri Seviye', desc:'Bir derste seviye puanını 90\'a çıkarıp 4. sınıf üstü sorulara geçtiğinde kazanılır.', target:4, unit:'. seviye', getValue:s=>s.maxLevel, cond: s=> s.maxLevel>=4 }
   ];
 
   const REWARD_DEFAULTS = [
@@ -884,7 +896,9 @@
   const state = {
     db:null,
     progress:{},      // key subjectId__topicId -> {status, updatedAt}
-    levels:{},         // subjectId -> 1|2|3
+    levels:{},         // subjectId -> 1|2|3|4 (rating'den türetilir)
+    ratings:{},        // subjectId -> 0..100 sürekli seviye puanı
+    mastery:{},        // subjectId__unitId -> {score, seen, correct, streak, lastSeen, dueAt}
     stats:{ points:0, streak:0, lastActiveDate:null, quizHistory:[], redemptions:[], writtenCorrect:0 },
     settings:{ pin:'0000' },
     sessions:{},        // date -> minutes
@@ -929,7 +943,7 @@
     return state.stats.quizHistory.reduce((m,h)=>Math.max(m,h.pct||0),0);
   }
   function earnedBadges(){
-    const s = { learnedCount: learnedCountTotal(), streak: state.stats.streak, quizCount: state.stats.quizHistory.length, bestScore: bestQuizScore(), writtenCorrect: state.stats.writtenCorrect||0, weekSubjectsCount: studiedThisWeekSubjects().size };
+    const s = { learnedCount: learnedCountTotal(), streak: state.stats.streak, quizCount: state.stats.quizHistory.length, bestScore: bestQuizScore(), writtenCorrect: state.stats.writtenCorrect||0, weekSubjectsCount: studiedThisWeekSubjects().size, maxLevel: CURRICULUM.reduce((m,x)=>Math.max(m, state.levels[x.id]||1), 1) };
     return BADGE_DEFS.map(b=>{
       const value = b.getValue(s);
       const pct = Math.min(100, Math.round((value/b.target)*100));
@@ -1075,7 +1089,77 @@
   }
   function writeStats(){ if(state.db){ state.db.doc('meta/stats').set(state.stats).catch(()=>{}); } }
   function writeSettings(){ if(state.db){ state.db.doc('meta/settings').set(state.settings).catch(()=>{}); } }
-  function writeLevel(subjectId, level){ state.levels[subjectId]=level; if(state.db){ state.db.doc('levels/'+subjectId).set({level}).catch(()=>{}); } }
+  function writeLevel(subjectId, level){
+    // Elle seviye seçimi: rating'i o bandın ortasına taşır, böylece sonraki sınavlar buradan devam eder.
+    writeRating(subjectId, ratingForLevel(level), level);
+  }
+  function ratingOf(subjectId){
+    if(state.ratings[subjectId]!=null) return state.ratings[subjectId];
+    return ratingForLevel(state.levels[subjectId]||1);
+  }
+  function writeRating(subjectId, rating, forcedLevel){
+    const r = Math.max(0, Math.min(100, Math.round(rating)));
+    const level = forcedLevel || levelFromRating(r);
+    state.ratings[subjectId] = r;
+    state.levels[subjectId] = level;
+    if(state.db){ state.db.doc('levels/'+subjectId).set({ level, rating:r }).catch(()=>{}); }
+  }
+
+  /* ---------- ünite bazlı ustalık + aralıklı tekrar ---------- */
+  const REVIEW_INTERVALS = [1,2,4,8,16,30]; // doğru seri uzadıkça tekrar aralığı açılır (gün)
+  function masteryKey(subjectId, unitId){ return subjectId+'__'+unitId; }
+  function masteryOf(subjectId, unitId){
+    return state.mastery[masteryKey(subjectId,unitId)] || { score:0, seen:0, correct:0, streak:0, lastSeen:null, dueAt:null };
+  }
+  // Bir ünitedeki doğru/yanlış sayısını ustalık puanına ve sonraki tekrar tarihine işler.
+  function applyMastery(subjectId, unitId, correctCount, wrongCount){
+    const m = { ...masteryOf(subjectId, unitId) };
+    for(let i=0;i<wrongCount;i++){
+      m.score = Math.max(0, Math.round(m.score*0.55 - 5));
+      m.streak = 0;
+    }
+    for(let i=0;i<correctCount;i++){
+      m.score = Math.min(100, Math.round(m.score + Math.max(6, (100-m.score)*0.35)));
+      m.streak = (m.streak||0) + 1;
+      m.correct = (m.correct||0) + 1;
+    }
+    m.seen = (m.seen||0) + correctCount + wrongCount;
+    const now = new Date();
+    m.lastSeen = now.toISOString();
+    const days = wrongCount>0 ? 1 : REVIEW_INTERVALS[Math.min(REVIEW_INTERVALS.length-1, Math.max(0,(m.streak||1)-1))];
+    const due = new Date(now); due.setDate(due.getDate()+days);
+    m.dueAt = due.toISOString().slice(0,10);
+    state.mastery[masteryKey(subjectId,unitId)] = m;
+    if(state.db){ state.db.doc('mastery/'+masteryKey(subjectId,unitId)).set(m).catch(()=>{}); }
+  }
+  function unitPriority(subjectId, unitId){
+    const m = masteryOf(subjectId, unitId);
+    const isDue = m.dueAt && m.dueAt<=todayStr() ? 1 : 0;
+    const unseen = m.seen===0 ? 1 : 0;
+    return (100-m.score)/100 + isDue*1.2 + unseen*0.6 + Math.random()*0.35;
+  }
+  function allUnitsByMastery(){
+    const out = [];
+    CURRICULUM.forEach(s=>s.units.forEach(u=>{
+      const m = masteryOf(s.id, u.id);
+      out.push({ subjectId:s.id, subjectName:s.name, icon:s.icon, unitId:u.id, unitName:u.name, score:m.score, seen:m.seen, dueAt:m.dueAt });
+    }));
+    return out;
+  }
+  function dueUnits(){
+    const today = todayStr();
+    return allUnitsByMastery()
+      .filter(x=>x.seen>0 && x.dueAt && x.dueAt<=today)
+      .sort((a,b)=>a.score-b.score);
+  }
+  function weakestUnits(n){
+    return allUnitsByMastery().filter(x=>x.seen>0).sort((a,b)=>a.score-b.score).slice(0,n);
+  }
+  function learnerProfileText(){
+    const levels = CURRICULUM.map(s=>`${s.name}: ${tierWord(state.levels[s.id]||1)}`).join(', ');
+    const weak = weakestUnits(3).map(x=>`${x.subjectName} / ${x.unitName}`);
+    return `Öğrencinin ders seviyeleri -> ${levels}.` + (weak.length?` En çok zorlandığı üniteler: ${weak.join('; ')}.`:'');
+  }
   function writeJournal(date, text){
     state.journal[date] = text;
     if(state.db){ state.db.doc('journal/'+date).set({text}).catch(()=>{}); }
@@ -1149,7 +1233,11 @@
 
   function buildQuiz(subjectFilter){
     let unitsMap;
-    if(subjectFilter && subjectFilter!=='all'){
+    if(subjectFilter==='review'){
+      unitsMap = new Map();
+      dueUnits().forEach(x=>unitsMap.set(x.unitId, x.subjectId));
+      if(unitsMap.size===0) weakestUnits(4).forEach(x=>unitsMap.set(x.unitId, x.subjectId));
+    } else if(subjectFilter && subjectFilter!=='all'){
       unitsMap = new Map();
       const subj = SUBJECT_BY_ID[subjectFilter];
       if(subj) subj.units.forEach(u=>unitsMap.set(u.id, subjectFilter));
@@ -1158,7 +1246,8 @@
       if(unitsMap.size===0) unitsMap = anyStudiedUnits();
     }
     if(unitsMap.size===0) return null;
-    const unitIds = shuffle([...unitsMap.keys()]);
+    // Zayıf, tekrarı gelmiş ve hiç çalışılmamış üniteler önce gelir (hafif rastgelelikle).
+    const unitIds = [...unitsMap.keys()].sort((a,b)=>unitPriority(unitsMap.get(b),b) - unitPriority(unitsMap.get(a),a));
     const targetCount = QUIZ_QUESTION_COUNT;
     const questions = [];
     const usedNonMathTexts = new Set();
@@ -1192,24 +1281,38 @@
     const quiz = state.quiz;
     const perSubject = {}; // subjectId -> {correct,total}
     const missedUnits = new Set();
+    const perUnit = {}; // subjectId::unitId -> {correct,wrong}
     quiz.questions.forEach((q,i)=>{
       perSubject[q.subjectId] = perSubject[q.subjectId] || {correct:0, total:0};
       perSubject[q.subjectId].total++;
-      if(answerIsCorrect(q, quiz.answers[i])) perSubject[q.subjectId].correct++;
-      else missedUnits.add(q.subjectId+'::'+q.unitId);
+      const uKey = q.subjectId+'::'+q.unitId;
+      perUnit[uKey] = perUnit[uKey] || {correct:0, wrong:0};
+      if(answerIsCorrect(q, quiz.answers[i])){ perSubject[q.subjectId].correct++; perUnit[uKey].correct++; }
+      else { missedUnits.add(uKey); perUnit[uKey].wrong++; }
+    });
+    // Ünite bazlı ustalık puanı ve sonraki tekrar tarihi
+    Object.keys(perUnit).forEach(uKey=>{
+      const [subjectId, unitId] = uKey.split('::');
+      applyMastery(subjectId, unitId, perUnit[uKey].correct, perUnit[uKey].wrong);
     });
     const totalCorrect = quiz.questions.filter((q,i)=>answerIsCorrect(q, quiz.answers[i])).length;
     const pct = Math.round(totalCorrect/quiz.questions.length*100);
     const writtenCorrectNow = quiz.questions.filter((q,i)=>q.type==='yazili' && answerIsCorrect(q, quiz.answers[i])).length;
     state.stats.writtenCorrect = (state.stats.writtenCorrect||0) + writtenCorrectNow;
+    // Sürekli seviye puanı: hedef doğruluk %75; üstünde kalırsa seviye yavaşça yükselir,
+    // altında kalırsa düşer. Soru sayısı az olan derslerde etki de küçük olur.
+    const levelUps = [];
     Object.keys(perSubject).forEach(subjectId=>{
       const {correct,total} = perSubject[subjectId];
       const subjPct = correct/total*100;
-      const curLevel = state.levels[subjectId]||1;
-      let newLevel = curLevel;
-      if(subjPct>=85) newLevel = Math.min(3, curLevel+1);
-      else if(subjPct<50) newLevel = Math.max(1, curLevel-1);
-      if(newLevel!==curLevel) writeLevel(subjectId, newLevel);
+      const oldRating = ratingOf(subjectId);
+      const oldLevel = state.levels[subjectId] || levelFromRating(oldRating);
+      const weight = Math.min(1, total/8);          // tam etki için ~8 soru
+      const delta = (subjPct - RATING_TARGET_PCT) * 0.45 * weight;
+      const newRating = Math.max(0, Math.min(100, oldRating + delta));
+      writeRating(subjectId, newRating);
+      const newLevel = state.levels[subjectId];
+      if(newLevel > oldLevel) levelUps.push({ subjectId, level:newLevel });
     });
     // Yanlış cevaplanan ünitelerdeki "öğrenildi" konularını "tekrar gerekli" yap,
     // böylece konu anlatımı ve soru tekrar sınava geri döner.
@@ -1234,6 +1337,7 @@
     quiz.finished = true;
     quiz.score = { totalCorrect, pct, earned };
     quiz.missed = missed;
+    quiz.levelUps = levelUps;
     render();
   }
 
@@ -1386,6 +1490,44 @@
       </div>`;
   }
 
+  function renderLevelCard(){
+    const rows = CURRICULUM.map(s=>{
+      const r = ratingOf(s.id);
+      const lvl = state.levels[s.id] || levelFromRating(r);
+      return `<div class="topic-row" style="flex-direction:column;align-items:stretch;gap:6px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="tname">${s.icon} ${esc(s.name)}</span>
+            <span class="status-pill">${tierLabel(lvl)}</span>
+          </div>
+          <div class="bar"><i style="width:${Math.round(r)}%; background:${iconColorVar(s.id)}"></i></div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="card">
+        <h2>📈 Seviyem</h2>
+        <div class="muted" style="margin-bottom:10px">Her sınavdan sonra seviyen kendiliğinden ayarlanır. Çubuk dolunca bir üst seviyeye geçersin — en üstte 🚀 İleri Seviye var (4. sınıfın üstü!).</div>
+        <div class="topics">${rows}</div>
+      </div>`;
+  }
+
+  function renderDueCard(){
+    const due = dueUnits();
+    if(!due.length) return '';
+    const top = due.slice(0,4);
+    return `
+      <div class="card" style="border-left:4px solid var(--blue)">
+        <h2>🔁 Tekrar Zamanı</h2>
+        <div class="muted" style="margin-bottom:10px">Bu üniteleri bir süre önce çalıştın; şimdi tekrar etmenin tam zamanı (böylece kalıcı olarak öğrenirsin).</div>
+        <div class="topics">${top.map(x=>`
+            <div class="topic-row">
+              <span class="tname">${x.icon} ${esc(x.unitName)}</span>
+              <span class="status-pill">ustalık %${x.score}</span>
+            </div>`).join('')}</div>
+        ${due.length>top.length?`<div class="muted" style="margin-top:8px">ve ${due.length-top.length} ünite daha</div>`:''}
+        <button class="btn block" style="margin-top:12px" data-action="start-quiz" data-subject="review">🔁 Tekrar Sınavını Başlat</button>
+      </div>`;
+  }
+
   function renderJournalCard(){
     const today = todayStr();
     const saved = state.journal[today] || '';
@@ -1485,9 +1627,11 @@
       <div class="quote-strip"><span class="qmark">💬</span><span>${esc(todaysQuote())}</span></div>
       ${renderWeekProgramCard()}
       ${reminderHTML}
+      ${renderDueCard()}
       ${pickerHTML}
       ${taskHTML}
       <div class="card">${timerHTML}</div>
+      ${renderLevelCard()}
       ${renderJournalCard()}
       ${renderRewardsCard()}
       <div class="card">
@@ -1548,9 +1692,9 @@
             <h3>Sınav Zorluğu</h3>
             <div class="muted" style="margin-bottom:8px">Sınav sonuçlarına göre otomatik ayarlanır, ama istersen kendin de değiştirebilirsin.</div>
             <div class="toggle-4">
-              ${['kolay','orta','zor'].map((tw,i)=>{
-                const lvl = i+1; const cur = state.levels[s.id]||1;
-                return `<button class="${cur===lvl?'on':''}" style="${cur===lvl?('background:'+iconColorVar(s.id)+';'):''}" data-action="set-level" data-subject="${s.id}" data-level="${lvl}">${tw==='kolay'?'😊 Kolay':tw==='orta'?'🙂 Orta':'💪 Zor'}</button>`;
+              ${[1,2,3,4].map(lvl=>{
+                const cur = state.levels[s.id] || levelFromRating(ratingOf(s.id));
+                return `<button class="${cur===lvl?'on':''}" style="${cur===lvl?('background:'+iconColorVar(s.id)+';'):''}" data-action="set-level" data-subject="${s.id}" data-level="${lvl}">${tierLabel(lvl)}</button>`;
               }).join('')}
             </div>
           </div>
@@ -1629,7 +1773,16 @@
               </div>`).join('')}
           </div>
         </div>` : '';
+      const levelUpHTML = (state.quiz.levelUps||[]).length ? `
+        <div class="card" style="text-align:center;border-left:4px solid var(--green)">
+          ${renderConfetti(24)}
+          <div style="font-size:40px">🚀</div>
+          <h2 style="margin-top:6px">Seviye Atladın!</h2>
+          <div class="muted" style="margin-top:6px">${state.quiz.levelUps.map(l=>`${SUBJECT_BY_ID[l.subjectId].icon} ${esc(SUBJECT_BY_ID[l.subjectId].name)} → ${tierLabel(l.level)}`).join('<br>')}</div>
+          <div class="muted" style="margin-top:8px">Bundan sonraki sorular biraz daha zor gelecek, çünkü artık hazırsın!</div>
+        </div>` : '';
       return `
+        ${levelUpHTML}
         <div class="card" style="text-align:center">
           ${pct>=60 ? renderConfetti(pct>=80?28:16) : ''}
           <div style="font-size:52px">${pct>=80?'🏆':pct>=50?'🙂':'🌱'}</div>
@@ -1735,9 +1888,20 @@
     const learned = learnedCountTotal();
     const weekMap = recentlyStudiedUnits();
     const levelRows = CURRICULUM.map(s=>{
-      const lvl = state.levels[s.id]||1;
-      return `<div class="topic-row"><span class="tname">${s.icon} ${esc(s.name)}</span><span class="status-pill">${tierWord(lvl)} seviye</span></div>`;
+      const r = ratingOf(s.id);
+      const lvl = state.levels[s.id] || levelFromRating(r);
+      return `<div class="topic-row"><span class="tname">${s.icon} ${esc(s.name)}</span><span class="status-pill">${tierLabel(lvl)} · ${Math.round(r)}/100</span></div>`;
     }).join('');
+    const masteryList = allUnitsByMastery().filter(x=>x.seen>0).sort((a,b)=>a.score-b.score);
+    const masteryHTML = masteryList.length ? masteryList.map(x=>`
+        <div class="topic-row" style="flex-direction:column;align-items:stretch;gap:5px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="tname">${x.icon} ${esc(x.unitName)}</span>
+            <span class="status-pill">%${x.score}</span>
+          </div>
+          <div class="bar"><i style="width:${x.score}%; background:${x.score>=70?'var(--green)':x.score>=40?'var(--yellow)':'var(--red)'}"></i></div>
+          <div class="muted" style="font-size:11.5px">${x.seen} soru görüldü${x.dueAt?` · sonraki tekrar: ${x.dueAt}`:''}</div>
+        </div>`).join('') : `<div class="muted">Henüz sınav çözülmedi, ustalık verisi birikmeye başlayınca burada görünecek.</div>`;
     const subjectEditors = CURRICULUM.map(s=>{
       const unitsHTML = s.units.map(u=>{
         const rows = u.topics.map(t=>{
@@ -1775,7 +1939,12 @@
       <div class="card">
         <h2>Ders Seviyeleri (Sınav Zorluğu)</h2>
         <div class="topics">${levelRows}</div>
-        <div class="muted" style="margin-top:8px">Sınav başarısına göre otomatik güncellenir.</div>
+        <div class="muted" style="margin-top:8px">Her sınavdan sonra otomatik güncellenir (hedef doğruluk %${RATING_TARGET_PCT}). 90 puanı aşan derste 🚀 İleri Seviye açılır: sorular 4. sınıf üstü, çok adımlı gelir.</div>
+      </div>
+      <div class="card">
+        <h2>🎯 Ünite Ustalığı</h2>
+        <div class="muted" style="margin-bottom:10px">En zayıf üniteler üstte. Sınavlar bu listeye göre soru seçer ve "sonraki tekrar" tarihi geldiğinde o ünite kızınızın karşısına yeniden çıkar.</div>
+        <div class="topics">${masteryHTML}</div>
       </div>
       <div class="card">
         <h2>Konu Durumlarını Düzenle</h2>
@@ -1928,12 +2097,15 @@
       if(confirm('Tüm ilerleme ve puanlar silinsin mi? Bu işlem geri alınamaz.')){
         const progressKeys = Object.keys(state.progress);
         const levelKeys = Object.keys(state.levels);
-        state.progress = {}; state.stats = { points:0, streak:0, lastActiveDate:null, quizHistory:[], redemptions:[], writtenCorrect:0 }; state.levels={};
+        const masteryKeys = Object.keys(state.mastery);
+        state.progress = {}; state.stats = { points:0, streak:0, lastActiveDate:null, quizHistory:[], redemptions:[], writtenCorrect:0 };
+        state.levels = {}; state.ratings = {}; state.mastery = {};
         writeStats();
         render();
         if(state.db){
           progressKeys.forEach(k=>{ state.db.doc('progress/'+k).delete().catch(()=>{}); });
           levelKeys.forEach(k=>{ state.db.doc('levels/'+k).delete().catch(()=>{}); });
+          masteryKeys.forEach(k=>{ state.db.doc('mastery/'+k).delete().catch(()=>{}); });
         }
       }
     }
@@ -1983,17 +2155,26 @@
 
     if(state.db){
       try{
-        const [progressSnap, levelsSnap, statsDoc, settingsDoc, sessionsSnap, rewardsSnap, journalSnap] = await Promise.all([
+        const [progressSnap, levelsSnap, statsDoc, settingsDoc, sessionsSnap, rewardsSnap, journalSnap, masterySnap] = await Promise.all([
           state.db.collection('progress').get(),
           state.db.collection('levels').get(),
           state.db.doc('meta/stats').get(),
           state.db.doc('meta/settings').get(),
           state.db.collection('sessions').get(),
           state.db.collection('rewards').get(),
-          state.db.collection('journal').get()
+          state.db.collection('journal').get(),
+          state.db.collection('mastery').get()
         ]);
         progressSnap.docs.forEach(d=>{ state.progress[d.id] = d.data(); });
-        levelsSnap.docs.forEach(d=>{ const data=d.data(); if(data && data.level) state.levels[d.id]=data.level; });
+        levelsSnap.docs.forEach(d=>{
+          const data = d.data() || {};
+          if(data.level) state.levels[d.id] = data.level;
+          if(typeof data.rating==='number') state.ratings[d.id] = data.rating;
+        });
+        masterySnap.docs.forEach(d=>{
+          const data = d.data() || {};
+          state.mastery[d.id] = { score:0, seen:0, correct:0, streak:0, lastSeen:null, dueAt:null, ...data };
+        });
         if(statsDoc.exists){ state.stats = { points:0, streak:0, lastActiveDate:null, quizHistory:[], redemptions:[], writtenCorrect:0, ...statsDoc.data() }; }
         if(settingsDoc.exists){ state.settings = { pin:'0000', ...settingsDoc.data() }; }
         sessionsSnap.docs.forEach(d=>{ const data=d.data(); state.sessions[d.id] = (data&&data.minutes)||0; });
