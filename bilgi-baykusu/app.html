@@ -1,0 +1,2196 @@
+<title>Bilgi Baykuşu</title>
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF8EC; --surface:#FFFFFF; --surface-2:#FFF1D6; --ink:#3A2E22; --ink-soft:#8A7860; --border:#F0DEC0;
+    --accent:#FF8B5E; --accent-ink:#7A3B1E;
+    --yellow:#FFC53D; --blue:#4FA9E8; --pink:#FF6FA0; --green:#4FBE86; --purple:#9C86E6; --teal:#33BFC4; --red:#FF6B6B;
+    --shadow: 0 4px 14px rgba(120,80,30,0.10);
+    --track:#F1E2C4;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#211A11; --surface:#2C2316; --surface-2:#392C19; --ink:#F5E9D6; --ink-soft:#C7B393; --border:#4A3B24;
+      --accent:#FF9A6B; --accent-ink:#FFD9C2;
+      --yellow:#FFCE5C; --blue:#6BBBEF; --pink:#FF8FB5; --green:#6BCE9B; --purple:#B29EEE; --teal:#54D1D6; --red:#FF8686;
+      --shadow: 0 4px 16px rgba(0,0,0,0.35);
+      --track:#453722;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#211A11; --surface:#2C2316; --surface-2:#392C19; --ink:#F5E9D6; --ink-soft:#C7B393; --border:#4A3B24;
+    --accent:#FF9A6B; --accent-ink:#FFD9C2;
+    --yellow:#FFCE5C; --blue:#6BBBEF; --pink:#FF8FB5; --green:#6BCE9B; --purple:#B29EEE; --teal:#54D1D6; --red:#FF8686;
+    --shadow: 0 4px 16px rgba(0,0,0,0.35);
+    --track:#453722;
+  }
+  *{box-sizing:border-box;}
+  body{ background:var(--bg); color:var(--ink); font-family:'Nunito',system-ui,sans-serif; padding-inline:16px; padding-block:18px 40px; }
+  h1,h2,h3,.disp{ font-family:'Baloo 2',system-ui,sans-serif; }
+  h1,h2,h3{ text-wrap:balance; margin:0; }
+  .wrap{ max-width:920px; margin:0 auto; }
+  button{ font-family:inherit; cursor:pointer; border:none; }
+  button:focus-visible, [tabindex]:focus-visible{ outline:3px solid var(--blue); outline-offset:2px; }
+
+  /* header */
+  .top{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .mascot{ font-size:44px; line-height:1; filter:drop-shadow(0 3px 4px rgba(0,0,0,0.15)); }
+  .top h1{ font-size:22px; color:var(--accent-ink); }
+  .top .sub{ font-size:13px; color:var(--ink-soft); font-weight:700; }
+  .stat-chips{ margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{ background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:6px 12px; font-weight:800; font-size:13px; display:flex; align-items:center; gap:5px; box-shadow:var(--shadow); white-space:nowrap; }
+
+  /* tabs */
+  .tabbar{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .tab{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:10px 16px; font-weight:800; font-size:14px; color:var(--ink-soft); display:flex; gap:6px; align-items:center; }
+  .tab.active{ background:var(--accent); color:#fff; border-color:transparent; }
+
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .card h2{ font-size:19px; margin-bottom:10px; }
+  .muted{ color:var(--ink-soft); font-size:14px; line-height:1.5; }
+
+  .btn{ background:var(--accent); color:#fff; border-radius:12px; padding:12px 20px; font-weight:800; font-size:15px; box-shadow:var(--shadow); }
+  .btn:active{ transform:translateY(1px); }
+  .btn.secondary{ background:var(--surface-2); color:var(--ink); }
+  .btn.block{ width:100%; text-align:center; }
+  .btn[disabled]{ opacity:0.5; cursor:not-allowed; }
+
+  /* ring */
+  .ring{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; }
+  .ring::after{ content:attr(data-pct) '%'; width:42px; height:42px; border-radius:50%; background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; }
+
+  /* today task */
+  .task-card{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  .task-info{ flex:1; min-width:180px; }
+  .task-info .lbl{ font-size:12px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; }
+  .task-info .name{ font-size:19px; font-weight:800; margin-top:2px; }
+
+  .grid-subjects{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .subj-tile{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px; text-align:left; display:flex; flex-direction:column; gap:8px; box-shadow:var(--shadow); }
+  .subj-tile .ic{ font-size:26px; }
+  .subj-tile .nm{ font-weight:800; font-size:14px; }
+  .bar{ height:9px; border-radius:999px; background:var(--track); overflow:hidden; }
+  .bar > i{ display:block; height:100%; border-radius:999px; background:var(--accent); }
+  .subj-tile .pct{ font-size:12px; font-weight:700; color:var(--ink-soft); }
+
+  .badges-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .badge{ background:var(--surface-2); border-radius:14px; padding:10px 12px; text-align:center; min-width:76px; }
+  .badge .emoji{ font-size:22px; }
+  .badge .nm{ font-size:11px; font-weight:800; margin-top:2px; }
+  .badge.locked{ opacity:0.35; }
+
+  /* subject detail */
+  .unit-block{ margin-bottom:14px; }
+  .unit-block h3{ font-size:15px; margin-bottom:8px; }
+  .topics{ display:flex; flex-direction:column; gap:6px; }
+  .topic-row{ display:flex; align-items:center; gap:10px; background:var(--surface-2); border-radius:12px; padding:9px 12px; }
+  .topic-row .tname{ flex:1; font-size:13.5px; font-weight:700; }
+  .status-dot{ width:11px; height:11px; border-radius:50%; flex:none; }
+  .status-pill{ font-size:11px; font-weight:800; padding:4px 9px; border-radius:999px; border:1px solid var(--border); background:var(--surface); white-space:nowrap; }
+
+  /* quiz */
+  .qprog{ display:flex; gap:5px; margin-bottom:14px; }
+  .qprog i{ flex:1; height:6px; border-radius:999px; background:var(--track); }
+  .qprog i.done{ background:var(--accent); }
+  .q-text{ font-size:17px; font-weight:800; margin-bottom:14px; white-space:pre-line; }
+  .opts{ display:flex; flex-direction:column; gap:9px; }
+  .opt{ background:var(--surface-2); border:2px solid transparent; border-radius:13px; padding:12px 14px; font-weight:700; font-size:14.5px; text-align:left; }
+  .opt.selected{ border-color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, var(--surface-2)); }
+  .opt.correct{ border-color:var(--green); background:color-mix(in srgb, var(--green) 22%, var(--surface-2)); }
+  .opt.wrong{ border-color:var(--red); background:color-mix(in srgb, var(--red) 20%, var(--surface-2)); }
+  .opt[disabled]{ cursor:default; }
+  .text-answer{ width:100%; font-family:inherit; font-size:15px; font-weight:700; border:2px solid var(--border); background:var(--surface-2); color:var(--ink); border-radius:13px; padding:12px 14px; }
+  .text-answer:focus{ outline:none; border-color:var(--accent); }
+  .text-answer:disabled{ opacity:0.75; }
+  .journal-box{ width:100%; min-height:80px; font-family:inherit; font-size:14px; border:2px solid var(--border); background:var(--surface-2); color:var(--ink); border-radius:13px; padding:12px 14px; resize:vertical; }
+  .journal-box:focus{ outline:none; border-color:var(--accent); }
+  .explain-box{ background:var(--surface-2); border-left:4px solid var(--blue); border-radius:10px; padding:12px 14px; margin-top:14px; font-size:13.5px; line-height:1.5; }
+
+  .result-score{ font-family:'Baloo 2'; font-size:44px; text-align:center; color:var(--accent-ink); }
+  .result-sub{ text-align:center; color:var(--ink-soft); font-weight:700; margin-top:-4px; }
+
+  /* pin */
+  .pinpad{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:260px; margin:16px auto 0; }
+  .pinpad button{ background:var(--surface-2); border-radius:14px; padding:16px 0; font-size:19px; font-weight:800; }
+  .pindots{ display:flex; gap:10px; justify-content:center; margin:16px 0; }
+  .pindots i{ width:14px; height:14px; border-radius:50%; background:var(--track); display:block; }
+  .pindots i.filled{ background:var(--accent); }
+
+  .toggle-4{ display:flex; gap:5px; flex-wrap:wrap; }
+  .toggle-4 button{ font-size:11px; font-weight:800; padding:5px 9px; border-radius:999px; border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); }
+  .toggle-4 button.on{ color:#fff; border-color:transparent; }
+
+  .timer-box{ text-align:center; padding:10px 0; }
+  .timer-num{ font-family:'Baloo 2'; font-size:40px; color:var(--accent-ink); font-variant-numeric:tabular-nums; }
+
+  .empty{ text-align:center; padding:30px 10px; color:var(--ink-soft); }
+  .empty .big{ font-size:40px; margin-bottom:8px; }
+
+  /* rewards */
+  .reward-track{ position:relative; height:14px; border-radius:999px; background:var(--track); margin:10px 0 18px; }
+  .reward-track > i{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--yellow),var(--accent)); }
+  .reward-marks{ position:relative; height:22px; margin-top:14px; }
+  .reward-mark{ position:absolute; top:0; transform:translateX(-50%); text-align:center; font-size:16px; }
+  .reward-list{ display:flex; flex-direction:column; gap:8px; }
+  .reward-item{ display:flex; align-items:center; gap:10px; background:var(--surface-2); border-radius:13px; padding:10px 12px; }
+  .reward-item .em{ font-size:22px; }
+  .reward-item .info{ flex:1; }
+  .reward-item .nm{ font-weight:800; font-size:13.5px; }
+  .reward-item .cost{ font-size:11.5px; color:var(--ink-soft); font-weight:700; }
+  .reward-item.locked{ opacity:0.55; }
+  .reward-form{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  .reward-form input{ font-family:inherit; border:1px solid var(--border); background:var(--surface); color:var(--ink); border-radius:10px; padding:8px 10px; font-size:13px; }
+  .reward-form input[name="rname"]{ flex:2; min-width:140px; }
+  .reward-form input[name="remoji"]{ width:52px; text-align:center; }
+  .reward-form input[name="rcost"]{ width:80px; }
+  .redeem-log{ font-size:12.5px; color:var(--ink-soft); }
+  .redeem-log div{ padding:4px 0; border-bottom:1px dashed var(--border); }
+
+  @media (max-width:480px){
+    .top h1{ font-size:19px; }
+    .stat-chips{ margin-left:0; width:100%; }
+  }
+
+  .confetti-container{ position:relative; height:0; overflow:visible; }
+  .confetti-piece{ position:absolute; top:-16px; width:8px; height:14px; border-radius:2px; opacity:0.95; animation-name:confetti-fall; animation-timing-function:ease-in; animation-fill-mode:forwards; }
+  @keyframes confetti-fall{
+    0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform:translateY(240px) rotate(340deg); opacity:0; }
+  }
+  .quote-strip{ display:flex; align-items:center; gap:10px; background:var(--surface-2); border-radius:14px; padding:12px 16px; margin-bottom:16px; font-size:13.5px; font-weight:700; font-style:italic; color:var(--ink); }
+  .quote-strip .qmark{ font-size:20px; flex:none; }
+
+  #print-report{ display:none; }
+  @media print{
+    #app{ display:none !important; }
+    #print-report{ display:block !important; background:#fff; color:#111; }
+  }
+</style>
+
+<div class="wrap" id="app">
+  <div class="empty"><div class="big">🦉</div>Bilgi Baykuşu uyanıyor...</div>
+</div>
+<div id="print-report"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function todayStr(){ return new Date().toISOString().slice(0,10); }
+  function daysAgoStr(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function tierWord(level){ return level>=4?'ileri': level===3?'zor': level===2?'orta':'kolay'; }
+  function tierLabel(level){ return level>=4?'🚀 İleri': level===3?'💪 Zor': level===2?'🙂 Orta':'😊 Kolay'; }
+  function levelFromRating(r){ return r>=90?4 : r>=70?3 : r>=40?2 : 1; }
+  function ratingForLevel(level){ return level>=4?95 : level===3?80 : level===2?55 : 25; }
+  // Sınavlarda hedeflenen doğruluk oranı: bunun üstünde kalırsa seviye yükselir, altında düşer.
+  const RATING_TARGET_PCT = 75;
+
+  /* ---------- sesli okuma (text-to-speech) ---------- */
+  const ttsAvailable = typeof window!=='undefined' && 'speechSynthesis' in window;
+
+  /* ---------- yapay zekâ öğretmen (Claude) ---------- */
+  let sampleFn = null;              // boot sırasında claude.use('sample') ile gelir
+  const aiReady = ()=> !!sampleFn;
+  const TEACHER_RULES = [
+    "Sen 10 yaşında, 4. sınıfa giden bir öğrenciye yardım eden sıcakkanlı bir öğretmensin. Adın Bilgi Baykuşu.",
+    "Türkçe, kısa ve sade cümlelerle anlat; en fazla 140 kelime kullan.",
+    "Mutlaka günlük hayattan somut bir örnek ver.",
+    "Sadece okul derslerine (Türkçe, Matematik, Fen Bilimleri, Sosyal Bilgiler, İngilizce, Din Kültürü, Trafik Güvenliği) ve ders çalışmaya yardımcı konulara cevap ver.",
+    "Konu dışı, yaşa uygun olmayan ya da kişisel bilgi isteyen sorularda kibarca reddet ve derslerle ilgili soru sormasını öner.",
+    "Cevabın sonuna cesaretlendirici kısa bir cümle ekle.",
+    "Başlık, madde işareti ya da yıldız kullanma; düz paragraf yaz."
+  ].join('\n');
+
+  function aiErrorMessage(e){
+    const code = e && e.code;
+    if(code==='rate_limited') return 'Çok hızlı soru sordun 🙂 Biraz bekleyip tekrar dener misin?';
+    if(code==='not_granted') return 'Bu özellik için izin verilmedi.';
+    if(code==='cancelled') return null;
+    return 'Şu an cevap veremedim, birazdan tekrar dener misin?';
+  }
+
+  async function askTeacher(question){
+    const q = String(question||'').trim();
+    if(!q || !sampleFn) return;
+    if(state.ai.loading) return;
+    state.view = 'ask';
+    state.ai = { question:q, answer:'', loading:true, error:null };
+    render();
+    try{
+      const res = await sampleFn(TEACHER_RULES + '\n\n' + learnerProfileText() + '\nAnlatımını bu seviyeye göre ayarla.\n\nÖğrencinin sorusu: ' + q, {
+        modelTier:'default',
+        cache:false,
+        onText: ({text})=>{
+          state.ai.answer = text;
+          state.ai.loading = false;
+          const el = app.querySelector('#ai-answer');
+          if(el) el.textContent = text; else render();
+        }
+      });
+      state.ai.answer = (res && res.text) || state.ai.answer;
+      state.ai.loading = false;
+      render();
+    }catch(e){
+      state.ai.loading = false;
+      if(e && e.text) state.ai.answer = e.text;
+      state.ai.error = aiErrorMessage(e);
+      render();
+    }
+  }
+
+  // Sınav için yapay zekâ ile taze çoktan seçmeli sorular üretir; başarısız olursa boş döner.
+  async function generateAIQuestions(subjectId, unitIds, tier, count){
+    if(!sampleFn || !count) return [];
+    const subj = SUBJECT_BY_ID[subjectId];
+    if(!subj) return [];
+    const unitNames = unitIds.map(id=>{ const u = subj.units.find(x=>x.id===id); return u && u.name; }).filter(Boolean);
+    const gradeHint = tier==='ileri'
+      ? '4. sınıf müfredatının biraz üstünde, 5. sınıfa hazırlık düzeyinde ve çok adımlı (iki işlem gerektiren) sorular üret.'
+      : `${tier} zorlukta, 4. sınıf düzeyinde sorular üret.`;
+    const weakHint = weakestUnits(3).filter(x=>x.subjectId===subjectId).map(x=>x.unitName);
+    const prompt = [
+      `4. sınıf (10 yaş) ${subj.name} dersi için ${count} adet çoktan seçmeli soru üret.`,
+      unitNames.length ? `Üniteler: ${unitNames.join(' | ')}` : '',
+      gradeHint,
+      weakHint.length ? `Öğrenci şu ünitelerde zorlanıyor, sorularda bunlara ağırlık ver: ${weakHint.join(', ')}.` : '',
+      'Kurallar: Türkçe; MEB 4. sınıf müfredatı seviyesinde; her soruda tam 4 farklı seçenek ve tek doğru cevap; açıklama tek cümle ve çocuğun anlayacağı dilde; sorular birbirinden farklı olsun.',
+      'Yalnızca şu JSON yapısını döndür, başka hiçbir şey yazma:',
+      '{"questions":[{"q":"soru metni","opts":["secenek1","secenek2","secenek3","secenek4"],"correct":0,"explain":"kisa aciklama"}]}'
+    ].filter(Boolean).join('\n');
+    try{
+      const out = await sampleFn.json(prompt, { modelTier:'default', cache:false });
+      const list = out && Array.isArray(out.questions) ? out.questions : [];
+      const valid = [];
+      list.forEach((item, i)=>{
+        if(!item || typeof item.q!=='string' || !item.q.trim()) return;
+        if(!Array.isArray(item.opts) || item.opts.length!==4) return;
+        const opts = item.opts.map(o=>String(o==null?'':o).trim());
+        if(opts.some(o=>!o) || new Set(opts).size!==4) return;
+        const correct = Number(item.correct);
+        if(!Number.isInteger(correct) || correct<0 || correct>3) return;
+        valid.push({
+          subjectId,
+          unitId: unitIds[i % unitIds.length] || unitIds[0],
+          q: item.q.trim(),
+          opts,
+          correct,
+          explain: typeof item.explain==='string' ? item.explain.trim() : '',
+          fromAI: true
+        });
+      });
+      return valid;
+    }catch(e){
+      return [];
+    }
+  }
+
+  // Yerel sınavı kurar, sonra mümkünse sorularının bir kısmını yapay zekâ soruları ile değiştirir.
+  async function startQuiz(subjectFilter){
+    const quiz = buildQuiz(subjectFilter);
+    if(!quiz) return;
+    if(!sampleFn || !state.useAI){ state.quiz = quiz; render(); return; }
+    state.quizLoading = true;
+    render();
+    // Karışık ve tekrar sınavlarında hedef dersi sorulardan seçeriz (tek ders sınavında zaten belli).
+    const named = subjectFilter && subjectFilter!=='all' && SUBJECT_BY_ID[subjectFilter] ? subjectFilter : null;
+    const targetSubject = named || quiz.questions[randInt(0, quiz.questions.length-1)].subjectId;
+    const unitIds = [...new Set(quiz.questions.filter(q=>q.subjectId===targetSubject).map(q=>q.unitId))];
+    const fallbackUnits = (SUBJECT_BY_ID[targetSubject].units||[]).slice(0,1).map(u=>u.id);
+    const tier = tierWord(state.levels[targetSubject] || 1);
+    const aiQuestions = await generateAIQuestions(targetSubject, unitIds.length?unitIds:fallbackUnits, tier, 8);
+    if(aiQuestions.length){
+      const replaceable = quiz.questions
+        .map((q,i)=>({q,i}))
+        .filter(x=>x.q.subjectId===targetSubject && x.q.type!=='yazili')
+        .map(x=>x.i);
+      const slots = replaceable.length ? replaceable : quiz.questions.map((_,i)=>i);
+      aiQuestions.slice(0, slots.length).forEach((aiq, n)=>{ quiz.questions[slots[n]] = aiq; });
+      quiz.aiCount = Math.min(aiQuestions.length, slots.length);
+    }
+    state.quizLoading = false;
+    state.quiz = quiz;
+    render();
+  }
+  function speak(text){
+    if(!ttsAvailable || !text) return;
+    try{
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'tr-TR';
+      u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  /* ---------- mikrofonla sesli cevap (speech-to-text) ---------- */
+  const SpeechRecognitionCtor = typeof window!=='undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
+  const sttAvailable = !!SpeechRecognitionCtor;
+  let activeRecognition = null;
+  function startVoiceInput(onResult, onDone){
+    if(!sttAvailable) return;
+    try{
+      if(activeRecognition){ activeRecognition.abort(); }
+      const rec = new SpeechRecognitionCtor();
+      activeRecognition = rec;
+      rec.lang = 'tr-TR';
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      rec.onresult = (e)=>{ if(e.results && e.results[0] && e.results[0][0]) onResult(e.results[0][0].transcript); };
+      rec.onerror = ()=>{ if(onDone) onDone(); };
+      rec.onend = ()=>{ activeRecognition=null; if(onDone) onDone(); };
+      rec.start();
+    }catch(e){ if(onDone) onDone(); }
+  }
+  function normalizeAnswer(s){
+    return String(s||'').toLocaleLowerCase('tr-TR').trim().replace(/\s+/g,' ').replace(/[.,!?;:'"]/g,'');
+  }
+  function answerIsCorrect(q, given){
+    if(given==null || given==='') return false;
+    if(q.type==='yazili'){
+      const norm = normalizeAnswer(given);
+      return (q.answers||[]).some(a=>normalizeAnswer(a)===norm);
+    }
+    return given===q.correct;
+  }
+  function correctAnswerText(q){
+    return q.type==='yazili' ? (q.answers && q.answers[0]) : q.opts[q.correct];
+  }
+
+  /* ---------- curriculum data ---------- */
+  const SUBJECT_COLOR = { turkce:'pink', matematik:'blue', fen:'green', sosyal:'purple', ingilizce:'yellow', din:'teal', trafik:'red' };
+
+  const CURRICULUM = [
+    { id:'turkce', name:'Türkçe', icon:'📖', units:[
+      { id:'tema1', name:'1. Tema: Erdemler', topics:[ {id:'t1a',name:'Sözcükte Anlam (Gerçek-Mecaz)'}, {id:'t1b',name:'Eş ve Zıt Anlamlı Kelimeler'}, {id:'t1c',name:'Metni Anlama ve Yorumlama'} ]},
+      { id:'tema2', name:'2. Tema: Millî Kültürümüz', topics:[ {id:'t2a',name:'Atasözü ve Deyimler'}, {id:'t2b',name:'Noktalama İşaretleri'}, {id:'t2c',name:'Konu ve Ana Fikir'} ]},
+      { id:'tema3', name:'3. Tema: Doğa ve Evren', topics:[ {id:'t3a',name:'Sebep-Sonuç Cümleleri'}, {id:'t3b',name:'Yazım Kuralları'}, {id:'t3c',name:'Karşılaştırma Yapma'} ]},
+      { id:'tema4', name:'4. Tema: Atatürk', topics:[ {id:'t4a',name:'Zaman ve Yer Bildiren Sözcükler'}, {id:'t4b',name:'Metin Türleri'}, {id:'t4c',name:'Anlatım Bozuklukları'} ]},
+      { id:'tema5', name:'5. Tema: Sağlık ve Spor', topics:[ {id:'t5a',name:'İsim, Sıfat, Zamir'}, {id:'t5b',name:'Öznel-Nesnel Cümleler'}, {id:'t5c',name:'Paragrafta Anlam'} ]},
+      { id:'tema6', name:'6. Tema: Değerlerimiz', topics:[ {id:'t6a',name:'Fiil (Eylem) Kavramı'}, {id:'t6b',name:'Cümlenin Ögeleri'}, {id:'t6c',name:'Duygu ve Düşünceyi Anlatma'} ]},
+      { id:'tema7', name:'7. Tema: Üretim, Tüketim ve Verimlilik', topics:[ {id:'t7a',name:'Bağlaçlar'}, {id:'t7b',name:'Grafik ve Tablo Okuma'}, {id:'t7c',name:'Özet Çıkarma'} ]},
+      { id:'tema8', name:'8. Tema: Yaşayan Değerler', topics:[ {id:'t8a',name:'Cümle Çeşitleri'}, {id:'t8b',name:'Yazım-Noktalama Genel Tekrar'}, {id:'t8c',name:'Okuduğunu Değerlendirme'} ]}
+    ]},
+    { id:'matematik', name:'Matematik', icon:'🔢', units:[
+      { id:'m1', name:'1. Ünite: Doğal Sayılar', topics:[ {id:'m1a',name:'Sayıları Okuma-Yazma (4-6 basamak)'}, {id:'m1b',name:'Basamak Değeri ve Çözümleme'}, {id:'m1c',name:'Karşılaştırma ve Sıralama'} ]},
+      { id:'m2', name:'2. Ünite: Toplama ve Çıkarma', topics:[ {id:'m2a',name:'Zihinden Toplama-Çıkarma'}, {id:'m2b',name:'Tahmin Etme'}, {id:'m2c',name:'Problem Çözme'} ]},
+      { id:'m3', name:'3. Ünite: Çarpma ve Bölme', topics:[ {id:'m3a',name:'Çarpma İşlemi'}, {id:'m3b',name:'Bölme İşlemi'}, {id:'m3c',name:'Çarpma-Bölme ile Problemler'} ]},
+      { id:'m4', name:'4. Ünite: Kesirler, Zaman ve Veri', topics:[ {id:'m4a',name:'Kesirleri Tanıma-Karşılaştırma'}, {id:'m4b',name:'Kesirlerle Toplama'}, {id:'m4c',name:'Veri Toplama ve Grafik'} ]},
+      { id:'m5', name:'5. Ünite: Geometri', topics:[ {id:'m5a',name:'Açılar'}, {id:'m5b',name:'Üçgen, Kare, Dikdörtgen'}, {id:'m5c',name:'Uzunluk Ölçme'} ]},
+      { id:'m6', name:'6. Ünite: Çevre, Alan ve Ölçme', topics:[ {id:'m6a',name:'Çevre Hesaplama'}, {id:'m6b',name:'Alan Hesaplama'}, {id:'m6c',name:'Tartma ve Sıvı Ölçme'} ]}
+    ]},
+    { id:'fen', name:'Fen Bilimleri', icon:'🔬', units:[
+      { id:'f1', name:"1. Ünite: Yer Kabuğu ve Dünya'mız", topics:[ {id:'f1a',name:'Yer Kabuğunun Yapısı'}, {id:'f1b',name:'Dönme ve Dolanma Hareketi'}, {id:'f1c',name:'Deprem'} ]},
+      { id:'f2', name:'2. Ünite: Besinlerimiz', topics:[ {id:'f2a',name:'Besin İçerikleri'}, {id:'f2b',name:'Dengeli Beslenme'}, {id:'f2c',name:'Besinlerin Saklanması'} ]},
+      { id:'f3', name:'3. Ünite: Kuvvetin Etkileri', topics:[ {id:'f3a',name:'Kuvvetin Cisimlere Etkisi'}, {id:'f3b',name:'Sürtünme Kuvveti'} ]},
+      { id:'f4', name:'4. Ünite: Maddenin Özellikleri', topics:[ {id:'f4a',name:'Ölçülebilir Özellikler'}, {id:'f4b',name:'Maddenin Halleri'}, {id:'f4c',name:'Isı ve Sıcaklık'} ]},
+      { id:'f5', name:'5. Ünite: Aydınlatma ve Ses', topics:[ {id:'f5a',name:'Işık Kaynakları'}, {id:'f5b',name:'Sesin Özellikleri'} ]},
+      { id:'f6', name:'6. Ünite: İnsan ve Çevre', topics:[ {id:'f6a',name:'Doğal ve Yapay Çevre'}, {id:'f6b',name:'Çevre Sorunları'} ]},
+      { id:'f7', name:'7. Ünite: Basit Elektrik Devreleri', topics:[ {id:'f7a',name:'Devre Elemanları'}, {id:'f7b',name:'Seri Bağlama'} ]}
+    ]},
+    { id:'sosyal', name:'Sosyal Bilgiler', icon:'🌍', units:[
+      { id:'s1', name:'1. Ünite: Birey ve Toplum', topics:[ {id:'s1a',name:'Kişisel Özelliklerim'}, {id:'s1b',name:'Haklarım ve Sorumluluklarım'} ]},
+      { id:'s2', name:'2. Ünite: Kültür ve Miras', topics:[ {id:'s2a',name:'Kültürel Miras'}, {id:'s2b',name:'Yerel Tarih'} ]},
+      { id:'s3', name:'3. Ünite: İnsanlar, Yerler ve Çevreler', topics:[ {id:'s3a',name:'Harita Okuma'}, {id:'s3b',name:'Yaşadığımız Yer'} ]},
+      { id:'s4', name:'4. Ünite: Bilim, Teknoloji ve Toplum', topics:[ {id:'s4a',name:'Teknolojik Gelişmeler'}, {id:'s4b',name:'İletişimin Değişimi'} ]},
+      { id:'s5', name:'5. Ünite: Üretim, Dağıtım, Tüketim', topics:[ {id:'s5a',name:'İhtiyaç ve İstekler'}, {id:'s5b',name:'Bilinçli Tüketici'} ]},
+      { id:'s6', name:'6. Ünite: Etkin Vatandaşlık', topics:[ {id:'s6a',name:'Yerel Yönetimler'}, {id:'s6b',name:'Demokratik Katılım'} ]},
+      { id:'s7', name:'7. Ünite: Küresel Bağlantılar', topics:[ {id:'s7a',name:'Ülkeler Arası İlişkiler'}, {id:'s7b',name:'Kültürel Çeşitlilik'} ]}
+    ]},
+    { id:'ingilizce', name:'İngilizce', icon:'🇬🇧', units:[
+      { id:'i1', name:'Unit 1: Hello', topics:[ {id:'i1a',name:'Greetings & Introducing Yourself'} ]},
+      { id:'i2', name:'Unit 2: My Body', topics:[ {id:'i2a',name:'Body Parts & Feelings'} ]},
+      { id:'i3', name:'Unit 3: My Town', topics:[ {id:'i3a',name:'Places in Town & Directions'} ]},
+      { id:'i4', name:'Unit 4: Wild Animals', topics:[ {id:'i4a',name:'Animals & Abilities (can)'} ]},
+      { id:'i5', name:'Unit 5: On the Farm', topics:[ {id:'i5a',name:'Farm Animals & There is/are'} ]},
+      { id:'i6', name:'Unit 6: At Home', topics:[ {id:'i6a',name:'Rooms & Household Items'} ]},
+      { id:'i7', name:'Unit 7: At School', topics:[ {id:'i7a',name:'School Objects & Subjects'} ]},
+      { id:'i8', name:'Unit 8: My Day', topics:[ {id:'i8a',name:'Daily Routines & Time'} ]},
+      { id:'i9', name:'Unit 9: Games', topics:[ {id:'i9a',name:'Toys & Games Vocabulary'} ]}
+    ]},
+    { id:'din', name:'Din Kültürü ve Ahlak Bilgisi', icon:'🕌', units:[
+      { id:'d1', name:'1. Ünite: Allah İnancı', topics:[ {id:'d1a',name:"Allah'ın Varlığı ve Birliği"} ]},
+      { id:'d2', name:"2. Ünite: Kur'an-ı Kerim'i Tanıyalım", topics:[ {id:'d2a',name:"Kur'an-ı Kerim'in Özellikleri"} ]},
+      { id:'d3', name:"3. Ünite: Hz. Muhammed'i Tanıyalım", topics:[ {id:'d3a',name:"Hz. Muhammed'in Hayatı"} ]},
+      { id:'d4', name:'4. Ünite: Din ve Ahlak', topics:[ {id:'d4a',name:'Güzel Ahlak ve Değerler'} ]},
+      { id:'d5', name:'5. Ünite: İslam ve Değerlerimiz', topics:[ {id:'d5a',name:'Yardımlaşma ve Paylaşma'} ]}
+    ]},
+    { id:'trafik', name:'Trafik Güvenliği', icon:'🚦', units:[
+      { id:'tr1', name:'Trafik Kuralları ve İşaretler', topics:[ {id:'tr1a',name:'Temel Trafik İşaretleri'} ]},
+      { id:'tr2', name:'Yaya Güvenliği', topics:[ {id:'tr2a',name:'Yayaların Sorumlulukları'} ]},
+      { id:'tr3', name:'Güvenli Yolculuk', topics:[ {id:'tr3a',name:'Araçta ve Yolda Güvenlik'} ]}
+    ]}
+  ];
+
+  const SUBJECT_BY_ID = {}; CURRICULUM.forEach(s=>SUBJECT_BY_ID[s.id]=s);
+  const ALL_TOPICS = [];
+  CURRICULUM.forEach(s=>s.units.forEach(u=>u.topics.forEach(t=>ALL_TOPICS.push({subjectId:s.id, subjectName:s.name, icon:s.icon, unitId:u.id, unitName:u.name, topicId:t.id, topicName:t.name}))));
+
+  /* ---------- topic lessons (konu anlatımı) ---------- */
+  const TOPIC_LESSONS = {
+    t1a:"Hadi bu konuya birlikte bakalım canım öğrencim. Bir sözcüğü kullandığımızda bazen onu tam, ilk akla gelen anlamıyla söyleriz; buna gerçek anlam denir, mesela 'sıcak çorba' dediğimizde çorbanın gerçekten sıcak olduğunu kastederiz. Bazen ise sözcüğü başka bir şeye benzeterek, dokunup hissedemeyeceğimiz bir anlamda kullanırız; buna mecaz anlam denir, mesela 'sıcak bir gülümseme' dediğimizde gülümsemenin ısısından değil, sana iyi hissettirmesinden bahsediyoruz. İpucu: cümledeki sözcüğü elinle tutup gösterebiliyorsan genelde gerçek anlamdır, gösteremiyorsan mecazdır.",
+    t1b:"Şimdi sana eş ve zıt anlamlı kelimeleri anlatayım. Eş anlamlı kelimeler birbirine çok yakın, neredeyse aynı anlama gelen kelimelerdir; 'güzel' ile 'hoş' gibi. Zıt anlamlı kelimeler ise tam tersi anlama gelir; 'güzel'in zıddı 'çirkin'dir. Bir kelimenin eş ya da zıt anlamlısını bulmak istediğinde, önce o kelimenin cümlede ne anlatmak istediğini düşün, sonra ona en yakın ya da en zıt kelimeyi ara.",
+    t1c:"Bir metni gerçekten anlamak iki adımda olur, hadi birlikte görelim. Önce metnin ne anlattığını, yani konusunu bulursun (mesela 'bir çocuğun okula ilk günü'). Sonra yazarın bu konuyla sana ne söylemek istediğini, yani ana fikri bulursun (mesela 'yeni bir şeye başlamak korkutucu ama güzel olabilir'). Yorumlama ise okuduklarından yola çıkarak kendi düşüncelerini eklemendir; 'Bence bu çocuk gibi ben de cesur olabilirim' demek gibi.",
+    t2a:"Gel, atasözü ve deyimleri birlikte inceleyelim. Atasözleri, atalarımızdan bize kalan ve bir ders veren kısa sözlerdir; 'Damlaya damlaya göl olur' sözü, küçük ama düzenli çabaların zamanla büyük bir sonuca dönüşeceğini anlatır. Deyimler ise kelimelerin gerçek anlamından farklı, kalıplaşmış anlatım kalıplarıdır; 'ağzı kulaklarına varmak' gerçekten ağzın kulağa gitmesi değil, çok sevinmek demektir. İkisini de günlük hayatta duyduğunda anlamını çözmeye çalış, zamanla ezberlersin.",
+    t2b:"Noktalama işaretlerini birlikte hatırlayalım. Düz, bilgi veren bir cümlenin sonuna nokta (.) koyarız. Bir şey sorduğumuzda cümle soru işareti (?) ile biter. Şaşırma, sevinme gibi güçlü bir duyguyu anlatan cümlelerin sonuna ünlem (!) koyarız. Cümle içinde bir şeyleri sayarken ya da ayırırken de virgül (,) kullanırız, mesela 'elma, armut ve muz aldım' cümlesinde olduğu gibi.",
+    t2c:"Konu ile ana fikri karıştırmamak için şöyle düşün. Konu, metnin kısaca neyle ilgili olduğudur; tek bir kelime ya da kısa bir ifadeyle söylenebilir, mesela 'dostluk'. Ana fikir ise yazarın bu konu hakkında sana vermek istediği asıl mesajdır, daha uzun bir cümledir; mesela 'gerçek dostlar zor günde belli olur'. Bir metni okuduğunda önce 'bu ne hakkında?' diye sor, sonra 'yazar bana ne anlatmak istiyor?' diye sor.",
+    t3a:"Sebep-sonuç ilişkisini birlikte öğrenelim. Bir cümlede '...dığı için', '...den dolayı' gibi ifadeler gördüğünde, bunlar sana bir olayın nedenini gösterir. 'Yağmur yağdığı için sokaklar ıslandı' cümlesinde önce yağmur yağmış (sebep), bu yüzden sokaklar ıslanmış (sonuç). Bu tür cümlelerde her zaman kendine 'neden oldu?' diye sor, cevabı sebep, geri kalanı sonuçtur.",
+    t3b:"Yazım kurallarını birlikte hatırlayalım. Her cümle büyük harfle başlar. Kişi, hayvan, yer ve ülke adları gibi özel isimlerin ilk harfi her zaman büyük yazılır; 'ayşe okula gitti' değil 'Ayşe okula gitti' yazılır. Sayı ve tarihlerin yazımında da kendine özgü kurallar vardır, bunları yazarken dikkatli olmalısın.",
+    t3c:"Karşılaştırma yaparken iki şeyin benzer ve farklı yanlarını anlatırız. Bunun için 'daha, en, gibi, kadar' gibi sözcükleri kullanırız; 'elma armuttan daha tatlıdır' dediğinde iki meyveyi karşılaştırmış olursun. Bir cümlede bu sözcükleri gördüğünde, orada bir karşılaştırma yapıldığını anlarsın.",
+    t4a:"Zaman ve yer bildiren sözcükleri ayırt etmeyi öğrenelim. Zaman bildiren sözcükler bir şeyin ne zaman olduğunu anlatır: dün, bugün, yarın, sabah gibi. Yer bildiren sözcükler ise nerede olduğunu anlatır: okulda, evde, bahçede gibi. Bir cümle okuduğunda 'ne zaman?' sorusuna cevap veren kelimeyi bulursan zaman sözcüğünü, 'nerede?' sorusuna cevap vereni bulursan yer sözcüğünü bulmuş olursun.",
+    t4b:"Metin türlerini birlikte tanıyalım. Hikâye, bir olayı başından sonuna, zaman sırasına göre anlatan bir metin türüdür. Şiir, duygu ve düşünceleri ölçülü ve kafiyeli, yani ahenkli bir dille anlatır. Tarif ise bir işin nasıl yapılacağını adım adım, sırayla anlatır; bir yemek tarifi gibi. Bir metni okuduğunda hangi amaçla yazıldığına bakarsan türünü bulabilirsin.",
+    t4c:"Anlatım bozukluklarını fark etmeyi öğrenelim. Bir cümlede gereksiz sözcük kullanmak (mesela 'geri iade etti' yerine sadece 'iade etti' demek yeterlidir), anlam çelişkisi olması ya da sözcüklerin yanlış sırada olması cümleyi bozar. Yazdığın bir cümleyi sesli okuduğunda kulağına tuhaf geliyorsa, muhtemelen bir anlatım bozukluğu vardır; cümleyi tekrar düzenlemelisin.",
+    t5a:"İsim, sıfat ve zamiri birbirinden ayırmayı öğrenelim. İsim, varlıklara verilen addır: kedi, İstanbul, kalem gibi. Sıfat, ismi niteler yani onun nasıl olduğunu söyler: 'kırmızı kedi' dediğinde 'kırmızı' sıfattır. Zamir ise ismin yerini tutar, ismi tekrar söylemek zorunda kalmayız: 'o, bu, ben, sen' gibi. Bir cümlede hangi sözcüğün varlığa ad olduğuna, hangisinin onu nitelediğine, hangisinin ismin yerine geçtiğine bak.",
+    t5b:"Öznel ve nesnel cümleleri ayırt etmeyi öğrenelim. Nesnel cümleler kişisel görüş içermez, herkesin kabul edebileceği, kanıtlanabilir gerçekleri anlatır: 'Su 100°C'de kaynar' gibi. Öznel cümleler ise kişinin kendi düşüncesini ya da beğenisini anlatır: 'Bu film çok güzeldi' gibi, çünkü herkes aynı fikirde olmayabilir. Bir cümlenin kanıtlanıp kanıtlanamayacağını düşünürsen hangisi olduğunu bulabilirsin.",
+    t5c:"Paragrafta anlamı bulmayı birlikte öğrenelim. Bir paragrafın konusunu, ana fikrini ve bu ana fikri destekleyen yardımcı fikirlerini bulmak, paragrafta anlamı kavramak demektir. Paragrafın ilk cümlesi genelde konuyu tanıtır, son cümlesi ise çoğu zaman önemli bir sonuç ya da ana fikir içerir. Bu yüzden bir paragrafı okurken ilk ve son cümleye özellikle dikkat et.",
+    t6a:"Fiil, yani eylem kavramını birlikte hatırlayalım. Fiiller bir işi, hareketi ya da oluşu anlatan sözcüklerdir: koşmak, gülmek, büyümek gibi. Bir sözcüğün fiil olup olmadığını anlamak için sonuna '-mak/-mek' ekleyip anlamlı bir söz elde edip edemediğine bakabilirsin; 'koş' sözcüğüne '-mak' ekleyince 'koşmak' olur ve anlamlıdır, demek ki fiildir.",
+    t6b:"Cümlenin ögelerini birlikte bulalım. Özne, cümlede işi yapan kişi ya da şeydir, 'kim/ne yaptı?' diye sorarız. Yüklem, cümlenin temelini oluşturan eylem ya da durumdur. Nesne ise eylemden etkilenen şeydir, 'neyi/kimi?' diye sorarız. 'Ali topu attı' cümlesinde: Ali özne (kim attı?), attı yüklem, topu ise nesnedir (neyi attı? topu).",
+    t6c:"Duygu ve düşüncelerimizi anlatmayı birlikte konuşalım. Bir şey hissettiğimizde ya da düşündüğümüzde bunu hem konuşurken hem yazarken açık, anlaşılır ve karşımızdakine saygılı, nazik bir dille anlatmaya özen göstermeliyiz. Böylece hem kendimizi doğru ifade eder hem de başkalarıyla iyi iletişim kurarız.",
+    t7a:"Bağlaçları birlikte tanıyalım. Bağlaçlar, sözcükleri ya da cümleleri birbirine bağlayan küçük ama önemli sözcüklerdir: ve, ile, ama, fakat, çünkü, hem...hem gibi. 'Koştu ve yoruldu' cümlesinde 've' iki eylemi birbirine bağlar, yani bağlaçtır. Bir cümlede iki şeyi birbirine bağlayan kelimeyi bulursan, o bağlaçtır.",
+    t7b:"Grafik ve tablo okumayı birlikte öğrenelim. Grafikler, sayısal bilgileri gözümüzle kolayca görebileceğimiz şekilde gösterir. Sütun grafiğinde sütunun yüksekliği, o değerin ne kadar büyük olduğunu gösterir; en yüksek sütun en büyük değeri anlatır. Çizgi grafiğinde ise çizginin yukarı ya da aşağı gitmesi, artışı ya da azalışı gösterir. Tablo okurken de satır ve sütun başlıklarına dikkat etmelisin, çünkü hangi bilginin nereye ait olduğunu onlar söyler.",
+    t7c:"Özet çıkarmayı birlikte öğrenelim. Bir metni özetlerken sadece en önemli bilgileri, kendi cümlelerinle ve olabildiğince kısa anlatırsın. Gereksiz ayrıntılar, örnekler ya da tekrarlar özete girmez; sadece metnin ana hatlarını verirsin. İyi bir özet, metni hiç okumamış biri bile okusa neyin anlatıldığını anlayabileceği kadar açık olmalıdır.",
+    t8a:"Cümle çeşitlerini birlikte hatırlayalım. Cümleler anlamına göre olumlu ('Kitabı okudum'), olumsuz ('Kitabı okumadım'), soru ('Kitabı okudun mu?') ve ünlem ('Ne güzel bir kitap!') cümlesi olabilir. Yükleminin türüne göre de isim cümlesi (yüklemi isim soylu, 'Hava çok güzel') ya da fiil cümlesi (yüklemi fiil, 'Ali koştu') olabilir. Bir cümleyi okurken önce anlamına, sonra yüklemine bakarak türünü belirleyebilirsin.",
+    t8b:"Yazım ve noktalama kurallarını birlikte tekrar edelim. Büyük harf kuralları, noktalama işaretleri ve yazım kurallarını hep birlikte gözden geçirmek, yazdığın metinleri hem daha doğru hem de daha anlaşılır yapar. Yazdıktan sonra metnini tekrar okuyup bu kurallara uyup uymadığını kontrol etmek çok işine yarar.",
+    t8c:"Okuduğunu değerlendirmeyi birlikte konuşalım. Bir metni okuduktan sonra onu beğenip beğenmediğini, neden öyle düşündüğünü ve bu metinden ne öğrendiğini kendi cümlelerinle anlatmaya çalış. Bu, sadece okumakla kalmayıp okuduğun üzerine düşünmeni, yani daha iyi bir okuyucu olmanı sağlar.",
+    m1a:"Büyük sayıları okumayı birlikte öğrenelim. Bir sayıyı okurken sondan başlayarak üçlü gruplara ayırırız: önce birler grubu, sonra binler grubu, sonra milyonlar grubu. Örneğin 45.230 sayısını sondan üçe ayırınca '45' ve '230' olur; bu da 'kırk beş bin iki yüz otuz' diye okunur. Büyük bir sayı gördüğünde sağdan sola üçer üçer nokta koyarak grupları ayırmayı dene, okumak çok kolaylaşır.",
+    m1b:"Basamak değerini birlikte öğrenelim. Bir rakamın değeri, sayının içinde bulunduğu basamağa göre değişir. 4536 sayısında 5 rakamı yüzler basamağındadır, bu yüzden basamak değeri 500'dür (5x100). Aynı 5 rakamı başka bir basamakta olsaydı değeri farklı olurdu. Bir rakamın basamak değerini bulmak için önce hangi basamakta olduğuna bak, sonra o basamağın değeriyle çarp.",
+    m1c:"Sayıları karşılaştırmayı birlikte öğrenelim. İki sayıyı karşılaştırırken önce basamak sayılarına bakarız; basamağı fazla olan sayı her zaman daha büyüktür. Basamak sayıları eşitse, en soldaki basamaktan başlayarak rakamları teker teker karşılaştırırız, ilk farklı bulduğun yerde hangi rakam büyükse o sayı daha büyüktür.",
+    m2a:"Zihinden toplama-çıkarma yapmayı birlikte öğrenelim. Zihinden işlem yaparken sayıları yuvarlayıp kolay parçalara ayırmak çok işine yarar. Mesela 48+27 işlemini yapmak için 48'i 50 yapabilirsin (2 fazladan eklemiş olursun), 50+27=77 bulursun, sonra fazladan eklediğin 2'yi çıkarırsın: 77-2=75. Bu yöntemle büyük sayıları bile kafandan hızlıca toplayabilirsin.",
+    m2b:"Tahmin etmeyi birlikte öğrenelim. Bir işlemin kesin sonucunu bulmadan önce, sayıları yuvarlayarak yaklaşık bir sonuç tahmin edebiliriz. Bu hem işlemi kontrol etmene hem de günlük hayatta hızlı karar vermene yardımcı olur; mesela markette alışveriş yaparken toplam tutarı yaklaşık olarak tahmin edebilirsin.",
+    m2c:"Problem çözmeyi birlikte öğrenelim. Bir problemi çözerken ilk önce sana ne verildiğini (verileri) ve senden ne istendiğini (soruyu) dikkatlice oku ve anla. Sonra hangi işlemi kullanman gerektiğine karar ver: bir şeyler birleşiyorsa toplama, bir şeyler azalıyor ya da fark bulunuyorsa çıkarma kullanırsın. Acele etmeden önce problemi iki kez okumak hata yapmanı önler.",
+    m3a:"Çarpma işlemini birlikte öğrenelim. Çarpma aslında bir sayıyı belirli sayıda kendisiyle toplamaktır. 4x3 işlemi, 4'ü 3 kere toplamak demektir: 4+4+4=12. Çarpım tablosunu ezberlemek bu işlemleri çok hızlandırır, ama unutursan her zaman tekrarlı toplama yaparak da bulabilirsin.",
+    m3b:"Bölme işlemini birlikte öğrenelim. Bölme, bir sayıyı eşit gruplara ayırmaktır. 12:3=4 demek, 12 tane nesneyi 3 eşit gruba ayırdığımızda her grupta 4 tane olacağı anlamına gelir. Bölmeyi kontrol etmenin kolay bir yolu var: bulduğun sonucu bölen sayıyla çarparsan, başlangıçtaki sayıyı bulmalısın (3x4=12 gibi).",
+    m3c:"Çarpma-bölme ile problem çözmeyi birlikte öğrenelim. Bir problemde 'her birine kaç düşer', 'eşit paylaştırılırsa' gibi ifadeler görürsen genelde bölme yapman gerekir. 'Toplam kaç eder', 'hepsi birlikte kaç tane' gibi ifadeler görürsen genelde çarpma yapman gerekir. Problemi okurken bu ipucu kelimelere dikkat etmek doğru işlemi seçmene yardımcı olur.",
+    m4a:"Kesirleri tanımayı ve karşılaştırmayı birlikte öğrenelim. Bir kesirde alttaki sayıya payda denir ve bütünün kaç eşit parçaya bölündüğünü gösterir. Üstteki sayıya pay denir ve bu parçalardan kaç tanesinin alındığını gösterir. Paydaları aynı olan iki kesri karşılaştırırken, payı büyük olan kesir her zaman daha büyüktür; çünkü aynı büyüklükteki parçalardan daha fazlasını almışsındır.",
+    m4b:"Kesirlerle toplama yapmayı birlikte öğrenelim. Paydaları aynı olan kesirleri toplarken sadece payları topla, payda hiç değişmez. Örneğin 2/5 + 1/5 işleminde paylar toplanır (2+1=3), payda aynı kalır (5), sonuç 3/5 olur. Bunu şöyle düşünebilirsin: aynı büyüklükte pastalar kesildiğinde, kaç dilim aldığını sayarsın.",
+    m4c:"Veri toplama ve grafik oluşturmayı birlikte öğrenelim. Etrafımızdan topladığımız bilgileri (verileri) tablo veya grafiklerle gösterebiliriz. Sütun grafiğinde her sütunun yüksekliği, o verinin büyüklüğünü gösterir; sütun ne kadar yüksekse o kadar çok demektir. Bir grafiği okurken önce eksenlerin ne anlattığına, sonra sütunların yüksekliğine bak.",
+    m5a:"Açıları birlikte öğrenelim. Açılar büyüklüklerine göre isim alır: 90 dereceden küçük açılara dar açı, tam 90 derece olan açıya dik açı, 90 ile 180 derece arasındaki açılara geniş açı, tam 180 derece olan açıya ise doğru açı denir. Bir açının türünü bulmak için önce kaç derece olduğuna bak, sonra bu sınırlara göre karar ver.",
+    m5b:"Üçgen, kare ve dikdörtgeni birlikte tanıyalım. Üçgenin 3 kenarı ve 3 köşesi vardır. Karenin 4 kenarı vardır ve hepsi birbirine eşit uzunluktadır. Dikdörtgenin de 4 kenarı vardır ama sadece karşılıklı kenarları birbirine eşittir. Bu şekillere bakarken kenar sayısını ve kenarların uzunluklarının birbirine eşit olup olmadığını kontrol edersen hangi şekil olduğunu bulabilirsin.",
+    m5c:"Uzunluk ölçmeyi birlikte öğrenelim. Kısa mesafeleri ölçerken genelde cetvel, uzun mesafeleri ölçerken metre kullanırız. 1 metre 100 santimetreye eşittir, yani 1 metrelik bir ipi santimetre cetveliyle ölçseydin 100 çizgi sayardın. Bir şeyin uzunluğunu ölçerken cetveli sıfırdan başlatmayı unutma.",
+    m6a:"Çevre hesaplamayı birlikte öğrenelim. Bir şeklin çevresi, o şeklin tüm kenarlarının toplam uzunluğudur; sanki şeklin etrafında yürüyüp kaç adım attığını ölçmek gibi düşünebilirsin. Dikdörtgende çevreyi bulmak için formül şudur: çevre = 2 x (uzun kenar + kısa kenar). Önce iki farklı kenarı topla, sonra 2 ile çarp.",
+    m6b:"Alan hesaplamayı birlikte öğrenelim. Bir şeklin alanı, o şeklin kapladığı yüzey büyüklüğüdür; sanki şeklin içini kaç tane küçük kareyle doldurabileceğini düşünmek gibi. Dikdörtgende alanı bulmak için formül şudur: alan = kısa kenar x uzun kenar. Çevre ile alanı karıştırmamaya dikkat et: çevre toplama, alan ise çarpma ile bulunur.",
+    m6c:"Tartma ve sıvı ölçmeyi birlikte öğrenelim. Bir şeyin ağırlığını ölçerken gram ve kilogram birimlerini, bir sıvının miktarını ölçerken mililitre ve litre birimlerini kullanırız. 1 kilogram 1000 grama, 1 litre de 1000 mililitreye eşittir. Küçük miktarlar için gram/mililitre, büyük miktarlar için kilogram/litre kullanmak daha pratiktir.",
+    f1a:"Yer kabuğunu birlikte tanıyalım. Dünya'nın en dıştaki, üzerinde yaşadığımız katmanına yer kabuğu denir. Kayalar, topraklar, dağlar ve denizlerin dibi yer kabuğunun bir parçasıdır. Yer kabuğu, Dünya'nın en ince ama bizim için en önemli katmanıdır çünkü hayatımız onun üzerinde geçer.",
+    f1b:"Dünya'nın hareketlerini birlikte öğrenelim. Dünya kendi ekseni etrafında döner; bu dönüş yaklaşık 24 saat sürer ve gece ile gündüzün oluşmasını sağlar, çünkü Güneş'e dönük yüzümüz aydınlıkken arka tarafımız karanlıktadır. Dünya aynı zamanda Güneş'in etrafında da döner, buna dolanma hareketi denir ve yaklaşık 1 yıl sürer; bu hareket de mevsimlerin oluşmasını sağlar.",
+    f1c:"Depremi birlikte konuşalım. Yer kabuğunun altındaki hareketler bazen yer kabuğunu sarsar, buna deprem denir. Deprem sırasında güvende kalmak çok önemlidir; bunun için 'çök-kapan-tutun' kuralını uygularız: hemen yere çök, başını ve boynunu koru, sağlam bir mobilyanın altına gir ve sıkıca tutun.",
+    f2a:"Besin içeriklerini birlikte öğrenelim. Yediğimiz besinler karbonhidrat, protein, yağ, vitamin ve mineral gibi farklı öğeler içerir; her biri vücudumuzda farklı bir görev üstlenir. Karbonhidratlar bize enerji verir, proteinler kaslarımızın gelişmesine yardımcı olur, vitamin ve mineraller ise vücudumuzun düzgün çalışmasını sağlar.",
+    f2b:"Dengeli beslenmeyi birlikte konuşalım. Sağlıklı büyümek için tek bir besin grubuna bağlı kalmak yeterli değildir; her besin grubundan (sebze, meyve, tahıl, süt ürünleri, et) yeterli miktarda tüketmemiz gerekir. Tabağını düşün: içinde hem sebze hem tahıl hem de protein kaynağı varsa, dengeli beslendiğin bir öğün yemişsin demektir.",
+    f2c:"Besinlerin saklanmasını birlikte öğrenelim. Besinleri buzdolabında, kapalı kaplarda ya da dondurucuda dondurarak saklamak, bozulmalarını geciktirir ve daha uzun süre taze kalmalarını sağlar. Açıkta bırakılan besinler daha çabuk bozulur, bu yüzden yiyecekleri her zaman uygun şekilde saklamaya özen göstermeliyiz.",
+    f3a:"Kuvvetin cisimlere etkisini birlikte öğrenelim. Bir cismi itmek ya da çekmek etkisine kuvvet denir. Kuvvet uyguladığımızda bir cismi hareket ettirebiliriz, durabilen bir cismi durdurabiliriz, hareket yönünü değiştirebiliriz ya da şeklini bozabiliriz. Bir topa vurduğunda topun hareket etmesi, kuvvetin en basit örneğidir.",
+    f3b:"Sürtünme kuvvetini birlikte öğrenelim. İki yüzey birbirine temas edip hareket ederken, hareketi yavaşlatan bir kuvvet oluşur, buna sürtünme kuvveti denir. Pürüzlü yüzeylerde (mesela halı üzerinde) sürtünme fazladır, bu yüzden kaymak zordur. Pürüzsüz yüzeylerde (mesela buz üzerinde) sürtünme azdır, bu yüzden kaymak kolaydır.",
+    f4a:"Maddenin ölçülebilir özelliklerini birlikte öğrenelim. Maddenin kütlesi (ne kadar ağır olduğu), hacmi (ne kadar yer kapladığı) ve sıcaklığı gibi özellikleri ölçülebilir ve sayılarla ifade edilebilir. Bu özellikleri ölçmek için terazi, ölçü kabı ve termometre gibi araçlar kullanırız.",
+    f4b:"Maddenin hallerini birlikte öğrenelim. Madde katı, sıvı ve gaz olmak üzere üç halde bulunabilir. Bir katıya ısı verildiğinde erir ve sıvı hale geçer; buz ısıtılınca suya dönüşür gibi. Bir sıvı daha da ısıtılırsa gaz haline geçebilir; su kaynayınca buhara dönüşür gibi. Isı alıp vermek, maddenin bir halden diğerine geçmesini sağlar.",
+    f4c:"Isı ve sıcaklığı birlikte öğrenelim. Isı bir enerji türüdür ve her zaman sıcak olan yerden soğuk olan yere doğru akar; sıcak bir çayın zamanla soğuması bunun bir örneğidir. Sıcaklık ise bir cismin ne kadar sıcak ya da soğuk olduğunun ölçüsüdür ve termometreyle ölçülür. Isı bir enerjidir, sıcaklık ise bu enerjinin bir ölçüsüdür; ikisini karıştırmamaya dikkat et.",
+    f5a:"Işık kaynaklarını birlikte öğrenelim. Kendiliğinden ışık üreten cisimlere ışık kaynağı denir; Güneş ve ampul buna güzel örneklerdir. Ay ise kendisi ışık üretmez, sadece Güneş'ten aldığı ışığı bize yansıtır. Bu yüzden Ay'a ışık kaynağı değil, ışığı yansıtan bir cisim deriz.",
+    f5b:"Sesin özelliklerini birlikte öğrenelim. Ses, bir cismin titreşmesiyle oluşur ve bu titreşim hava, su ya da katı bir madde aracılığıyla yayılır. Boşlukta (yani hiçbir maddenin olmadığı yerde, mesela uzayda) titreşimi taşıyacak bir madde olmadığı için ses yayılamaz. Bu yüzden astronotlar uzayda birbirleriyle telsizle konuşurlar, doğrudan sesle değil.",
+    f6a:"Doğal ve yapay çevreyi birlikte öğrenelim. Orman, deniz, dağ gibi kendiliğinden, insan eli değmeden var olan yerlere doğal çevre denir. Bina, yol, park gibi insanların inşa ettiği yerlere ise yapay çevre denir. Etrafına bakarken bir yerin kendiliğinden mi oluştuğunu yoksa insan yapımı mı olduğunu düşünürsen, hangisi olduğunu kolayca ayırt edebilirsin.",
+    f6b:"Çevre sorunlarını birlikte konuşalım. Çöplerin doğaya rastgele atılması, hava kirliliği ve su kirliliği önemli çevre sorunlarına yol açar. Geri dönüşüm yapmak (kâğıt, plastik, cam gibi atıkları ayrı toplamak) ve doğal kaynakları tasarruflu kullanmak, bu sorunları azaltmamıza yardımcı olur. Küçük bir çocuk bile su ve elektriği tasarruflu kullanarak çevreye katkıda bulunabilir.",
+    f7a:"Devre elemanlarını birlikte öğrenelim. Basit bir elektrik devresinde üç temel eleman bulunur: pil (devreye elektrik enerjisini sağlar), kablo (bu enerjiyi taşır) ve ampul (enerjiyi ışığa çevirir, yani tüketir). Bu üç eleman birbirine doğru bağlandığında ampul yanar.",
+    f7b:"Seri bağlamayı birlikte öğrenelim. Devre elemanlarının art arda, tek bir yoldan bağlanmasına seri bağlama denir. Seri bağlı bir devrede bir ampul sönerse ya da devreden çıkarsa, yol kesilir ve devredeki diğer ampuller de söner; çünkü elektrik akımının akabileceği tek yol kesilmiştir.",
+    s1a:"Kişisel özelliklerimizi birlikte konuşalım. Her insanın kendine has yetenekleri, ilgi alanları ve özellikleri vardır; kimi resim yapmayı sever, kimi spor yapmayı. Kendi özelliklerini tanımak, neyi iyi yaptığını ve nelerden hoşlandığını bilmek, kendini daha iyi anlamana ve kendine güvenmene yardımcı olur.",
+    s1b:"Haklarımızı ve sorumluluklarımızı birlikte öğrenelim. Hak, bizim sahip olduğumuz ve kimsenin elimizden alamayacağı şeylerdir; eğitim hakkı, sağlık hakkı gibi. Sorumluluk ise bizim yerine getirmemiz gereken görevlerdir; odanı toplamak, ödevini yapmak gibi. Haklarımız olduğu kadar, yerine getirmemiz gereken sorumluluklarımız da vardır; ikisi birlikte dengeli bir yaşam oluşturur.",
+    s2a:"Kültürel mirası birlikte öğrenelim. Camiler, köprüler, kaleler gibi elle tutulup gözle görülebilen, geçmişten kalan yapılara somut kültürel miras denir. Masal, türkü, oyun gibi elle tutulamayan ama nesilden nesile aktarılan değerlere ise somut olmayan kültürel miras denir. İkisi de bizim geçmişimizi ve kültürümüzü öğrenmemizde bize yardımcı olur.",
+    s2b:"Yerel tarihi birlikte konuşalım. Yaşadığımız şehrin ya da köyün geçmişini araştırmak, o yerin tarihini, geleneklerini ve kültürünü öğrenmemizi sağlar. Büyüklerinle konuşarak, eski fotoğraflara bakarak ya da tarihi yerleri ziyaret ederek yaşadığın yerin geçmişini keşfedebilirsin.",
+    s3a:"Harita okumayı birlikte öğrenelim. Haritalar, bir yerin kuşbakışı, yani yukarıdan bakılmış gibi küçültülerek çizilmiş halidir. Haritada yönleri gösteren işarete yön oku (pusula gülü) denir; kuzey, güney, doğu ve batıyı gösterir. Lejant ise haritadaki sembollerin ne anlama geldiğini açıklar. Bir haritayı okurken önce yön okuna, sonra lejanta bakmalısın.",
+    s3b:"Yaşadığımız yeri birlikte konuşalım. Yaşadığımız yerin coğrafi özellikleri, yani dağlık mı, ovalık mı, denize yakın mı olduğu, oradaki insanların yaşam biçimini etkiler. Mesela deniz kenarında yaşayanlar balıkçılıkla uğraşabilir, dağlık bölgede yaşayanlar hayvancılıkla uğraşabilir. Yaşadığın yerin coğrafyasına bakarak oradaki insanların nasıl yaşadığını tahmin edebilirsin.",
+    s4a:"Teknolojik gelişmeleri birlikte konuşalım. Zamanla gelişen teknoloji, hayatımızı kolaylaştırır ve işleri çok daha hızlı yapmamızı sağlar. Eskiden saatler süren bir iş bugün dakikalar içinde yapılabiliyor, çünkü teknoloji sürekli gelişiyor ve bize yeni araçlar sunuyor.",
+    s4b:"İletişimin değişimini birlikte öğrenelim. Geçmişte insanlar mektup yazarak ya da güvercinle haber göndererek haberleşirdi ve bu günler, hatta haftalar sürebilirdi. Günümüzde ise telefon ve internet sayesinde bir mesaj saniyeler içinde dünyanın öbür ucuna ulaşabiliyor. Bu, teknolojinin iletişimi nasıl değiştirdiğinin güzel bir örneğidir.",
+    s5a:"İhtiyaç ve istekleri birlikte ayırt edelim. İhtiyaçlar, yaşamak için mutlaka gerekli olan şeylerdir: yemek, su, barınak gibi. İstekler ise olmasa da yaşayabileceğimiz ama sahip olmaktan mutluluk duyduğumuz şeylerdir: yeni bir oyuncak gibi. Bir şeyi alıp almayacağına karar verirken önce 'bu bir ihtiyaç mı yoksa istek mi?' diye kendine sormak iyi bir alışkanlıktır.",
+    s5b:"Bilinçli tüketici olmayı birlikte konuşalım. Bilinçli bir tüketici, alışveriş yaparken gerçekten ihtiyacı olan şeyi alır, gereksiz harcamalardan kaçınır. Özellikle yiyecek alırken son kullanma tarihine, genel olarak da ürünün kalitesine dikkat eder. Bilinçli tüketici olmak, hem parayı hem de doğal kaynakları daha iyi kullanmamızı sağlar.",
+    s6a:"Yerel yönetimleri birlikte öğrenelim. Belediye, yaşadığımız şehrin temizlik, su, yol, park gibi günlük hizmetlerinden sorumlu olan yerel yönetim kurumudur. Şehrimizde gördüğümüz çöp toplama araçları, yol yapım çalışmaları ya da parklar genelde belediyenin işidir.",
+    s6b:"Demokratik katılımı birlikte konuşalım. Demokraside vatandaşlar oy vererek kendi yöneticilerini seçer ve ülke ya da şehir yönetimiyle ilgili kararlara katılabilir. Bu, herkesin sesinin duyulduğu ve önemli olduğu bir yönetim biçimidir. Sen de büyüdüğünde oy kullanarak bu sürece katılabileceksin.",
+    s7a:"Ülkeler arası ilişkileri birlikte öğrenelim. Ülkeler birbirleriyle ticaret yaparak mal alışverişinde bulunur, kültür ve bilim alanlarında da iş birliği yapar. Bu iş birlikleri sayesinde ülkeler birbirlerinden öğrenir ve gelişir; mesela bir ülkede bulunan bir buluş, dünyanın her yerinde kullanılabilir hale gelir.",
+    s7b:"Kültürel çeşitliliği birlikte konuşalım. Dünyada birbirinden çok farklı diller, gelenekler ve yaşam biçimleri vardır; buna kültürel çeşitlilik denir. Farklı kültürleri tanımak bize hoşgörülü olmayı öğretir ve dünyayı daha geniş bir bakış açısıyla görmemizi sağlar. Farklılıklara saygı duymak, iyi bir dünya vatandaşı olmanın önemli bir parçasıdır.",
+    i1a:"Let's learn together! Biriyle ilk kez tanıştığında 'Hello, my name is...' diyerek kendini tanıtabilirsin, bu 'Merhaba, benim adım...' demektir. Karşındaki kişi de kendini tanıttıktan sonra 'Nice to meet you' diyebilirsin, bu da 'Tanıştığımıza memnun oldum' anlamına gelir. Bu kalıpları ezberlersen İngilizce tanışmalar senin için çok kolay olur.",
+    i2a:"Hadi vücut bölümlerini birlikte öğrenelim. İngilizcede head baş, hand el, foot ayak, eye göz demektir. Duygularımızı anlatırken de 'I am happy' (mutluyum) ya da 'I am sad' (üzgünüm) gibi basit cümleler kurabiliriz. Kendi vücudunu gösterip bu kelimeleri tekrarlarsan çok daha kolay ezberlersin.",
+    i3a:"Şehirdeki yerleri ve yön tarif etmeyi birlikte öğrenelim. Hospital hastane, school okul, park park demektir. Yön tarif ederken 'turn left' sola dön, 'turn right' sağa dön, 'go straight' düz git anlamına gelir. Bir haritada bu kelimeleri kullanarak birine yol tarif edebilirsin.",
+    i4a:"Vahşi hayvanları ve 'can' kelimesini birlikte öğrenelim. Lion aslan, elephant fil demektir. 'Can' kelimesi bir şeyi yapabilme yeteneğini anlatır: 'Elephants can swim' cümlesi 'Filler yüzebilir' demektir. Bir hayvanın yapabildiği bir şeyi anlatmak istediğinde 'hayvan adı + can + fiil' kalıbını kullanabilirsin.",
+    i5a:"Çiftlik hayvanlarını ve 'there is/there are' kalıbını birlikte öğrenelim. Cow inek, sheep koyun demektir. 'There is' tekil bir şeyin varlığını ('There is a cow' - bir inek var), 'there are' ise çoğul şeylerin varlığını anlatır ('There are five sheep' - beş koyun var). Dikkat: sheep kelimesinin çoğulu da 'sheep'tir, 'sheeps' değildir.",
+    i6a:"Evdeki odaları birlikte öğrenelim. Kitchen mutfak, bedroom yatak odası, bathroom banyo demektir. Bir şeyin nerede olduğunu anlatırken 'on' üstünde, 'in' içinde, 'under' altında anlamına gelen kelimeleri kullanırız; 'The book is on the table' cümlesi 'Kitap masanın üstünde' demektir.",
+    i7a:"Okul eşyalarını ve ders adlarını birlikte öğrenelim. Pencil kalem, eraser silgi, notebook defter, bag çanta demektir. Ders adlarını söylerken 'Maths' Matematik, 'English' İngilizce demektir. 'My favourite subject is Maths' dersen 'En sevdiğim ders Matematik' demiş olursun.",
+    i8a:"Günlük rutinleri ve saati birlikte öğrenelim. 'Wake up' uyanmak, 'go to school' okula gitmek demektir. Saati sorarken 'What time is it?' (Saat kaç?) diye sorarız, cevap verirken de 'It's three o'clock' (Saat üç) gibi söyleriz. Kendi günlük rutinini İngilizce anlatmaya çalışırsan bu kalıpları çok daha iyi öğrenirsin.",
+    i9a:"Oyuncak ve oyun kelimelerini birlikte öğrenelim. Toy oyuncak, play oynamak, turn sıra demektir. Bir oyuna başlarken 'Let's play!' (Hadi oynayalım!) diyebilir, sıra kimde olduğunu sormak için 'Whose turn is it?' (Sıra kimde?) diye sorabilirsin. Arkadaşlarınla oyun oynarken bu ifadeleri kullanmayı deneyebilirsin.",
+    d1a:"Allah inancını birlikte konuşalım. Evrendeki her şeyin bir yaratıcısı olduğuna inanılır; İslam inancına göre bu yaratıcı Allah'tır. Allah'ın tek ve eşsiz olduğuna, O'ndan başka yaratıcı olmadığına inanmaya tevhit inancı denir. Bu, İslam dininin en temel inancıdır.",
+    d2a:"Kur'an-ı Kerim'in özelliklerini birlikte öğrenelim. Kur'an-ı Kerim, İslam dininin kutsal kitabıdır ve Arapça olarak indirilmiştir. Kur'an-ı Kerim 30 cüzden oluşur; okurken bu cüzler sırayla ilerler. Cüz sayısını 114 sure (bölüm) sayısıyla karıştırmamaya dikkat etmelisin, ikisi farklı şeylerdir.",
+    d3a:"Hz. Muhammed'in hayatını birlikte öğrenelim. Hz. Muhammed, Mekke şehrinde doğmuş ve hayatı boyunca doğruluğu ve güvenilirliğiyle tanınmıştır; hatta insanlar ona 'el-Emin', yani güvenilir kişi derlerdi. Onun bu güzel özellikleri, bugün de bizim için iyi bir örnektir.",
+    d4a:"Güzel ahlak ve değerleri birlikte konuşalım. Yardımseverlik, doğruluk, saygı gibi değerler güzel ahlakın önemli parçalarıdır. Bu değerlere uygun davranmak, hem kendimizi hem de çevremizdeki insanları mutlu eder. Günlük hayatında bu değerlere uygun davranmaya özen göstermek, iyi bir insan olmanın önemli bir adımıdır.",
+    d5a:"Yardımlaşma ve paylaşmayı birlikte konuşalım. İhtiyacı olan insanlarla elimizdekileri paylaşmak, toplumda dayanışmayı ve sevgiyi güçlendirir. Küçük bir paylaşım bile (bir arkadaşınla kalemini paylaşmak gibi) aslında büyük bir değeri, yardımlaşmayı yaşatmış olursun.",
+    tr1a:"Temel trafik işaretlerini birlikte öğrenelim. Trafik ışıklarında kırmızı 'dur', sarı 'hazırlan', yeşil ise 'geç' anlamına gelir. Trafik işaretleri, yollarda herkesin güvenle hareket etmesini sağlamak için konulmuştur. Bir trafik ışığı gördüğünde rengine göre ne yapman gerektiğini hemen bilmelisin.",
+    tr2a:"Yayaların sorumluluklarını birlikte konuşalım. Karşıdan karşıya geçmeden önce mutlaka sağa ve sola bakıp gelen araç olmadığından emin olmalısın. Geçerken yaya geçidini (zebra geçidini) kullanmalı, yürürken de kaldırımın yola değil iç kısmına yakın tarafından yürümelisin. Bu kurallar seni araçlardan korur.",
+    tr3a:"Araçta ve yolda güvenliği birlikte konuşalım. Bir araca bindiğinde her zaman emniyet kemerini takmalısın; ani bir fren ya da kaza anında seni koruyan en önemli şey odur. Araçtan inip binerken de etrafına dikkatli bakmalı, aceleyle hareket etmemelisin."
+  };
+
+  /* ---------- topic diagrams (basit şemalar) ---------- */
+  const TOPIC_DIAGRAMS = {
+    m5a: `<svg viewBox="0 0 360 110" width="100%" style="max-width:340px;display:block;margin:8px auto" role="img" aria-label="Açı türleri">
+      <g>
+        <path d="M20,80 L50,80 L38,62 Z" fill="var(--accent)" fill-opacity="0.25"/>
+        <line x1="20" y1="80" x2="80" y2="80" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="80" x2="65" y2="35" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        <text x="45" y="100" font-size="11" fill="var(--ink-soft)" text-anchor="middle">Dar (&lt;90°)</text>
+      </g>
+      <g transform="translate(90,0)">
+        <rect x="20" y="68" width="12" height="12" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <line x1="20" y1="80" x2="80" y2="80" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="80" x2="20" y2="20" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        <text x="45" y="100" font-size="11" fill="var(--ink-soft)" text-anchor="middle">Dik (90°)</text>
+      </g>
+      <g transform="translate(180,0)">
+        <path d="M20,80 L50,80 L18,56 Z" fill="var(--accent)" fill-opacity="0.25"/>
+        <line x1="20" y1="80" x2="80" y2="80" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="80" x2="15" y2="20" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        <text x="45" y="100" font-size="11" fill="var(--ink-soft)" text-anchor="middle">Geniş (&gt;90°)</text>
+      </g>
+      <g transform="translate(270,0)">
+        <line x1="10" y1="80" x2="80" y2="80" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="45" cy="80" r="3" fill="var(--accent)"/>
+        <text x="45" y="100" font-size="11" fill="var(--ink-soft)" text-anchor="middle">Doğru (180°)</text>
+      </g>
+    </svg>`,
+    m5b: `<svg viewBox="0 0 300 120" width="100%" style="max-width:300px;display:block;margin:8px auto" role="img" aria-label="Üçgen, kare, dikdörtgen">
+      <polygon points="30,95 85,95 57,25" fill="var(--blue)" fill-opacity="0.18" stroke="var(--blue)" stroke-width="3"/>
+      <text x="57" y="112" font-size="12" fill="var(--ink-soft)" text-anchor="middle">Üçgen</text>
+      <rect x="125" y="35" width="60" height="60" fill="var(--pink)" fill-opacity="0.18" stroke="var(--pink)" stroke-width="3"/>
+      <text x="155" y="112" font-size="12" fill="var(--ink-soft)" text-anchor="middle">Kare</text>
+      <rect x="215" y="45" width="75" height="45" fill="var(--green)" fill-opacity="0.18" stroke="var(--green)" stroke-width="3"/>
+      <text x="252" y="112" font-size="12" fill="var(--ink-soft)" text-anchor="middle">Dikdörtgen</text>
+    </svg>`,
+    f7a: `<svg viewBox="0 0 220 132" width="100%" style="max-width:280px;display:block;margin:8px auto" role="img" aria-label="Basit elektrik devresi">
+      <rect x="30" y="25" width="160" height="80" rx="10" fill="none" stroke="var(--yellow)" stroke-width="4"/>
+      <circle cx="110" cy="25" r="14" fill="var(--yellow)" fill-opacity="0.3" stroke="var(--yellow)" stroke-width="3"/>
+      <line x1="103" y1="18" x2="117" y2="32" stroke="var(--yellow)" stroke-width="2"/>
+      <line x1="117" y1="18" x2="103" y2="32" stroke="var(--yellow)" stroke-width="2"/>
+      <text x="110" y="10" font-size="11" fill="var(--ink-soft)" text-anchor="middle">Ampul</text>
+      <rect x="90" y="98" width="40" height="16" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="98" y1="98" x2="98" y2="114" stroke="var(--ink)" stroke-width="3"/>
+      <line x1="122" y1="98" x2="122" y2="114" stroke="var(--ink)" stroke-width="1.5"/>
+      <text x="110" y="128" font-size="11" fill="var(--ink-soft)" text-anchor="middle">Pil</text>
+      <text x="14" y="68" font-size="11" fill="var(--ink-soft)" text-anchor="middle" transform="rotate(-90 14 68)">Kablo</text>
+    </svg>`,
+    f1b: `<svg viewBox="0 0 240 130" width="100%" style="max-width:300px;display:block;margin:8px auto" role="img" aria-label="Dünya'nın dönme ve dolanma hareketi">
+      <ellipse cx="120" cy="75" rx="95" ry="42" fill="none" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <circle cx="120" cy="75" r="20" fill="var(--yellow)"/>
+      <text x="120" y="80" font-size="14" text-anchor="middle">☀️</text>
+      <circle cx="210" cy="75" r="11" fill="var(--blue)"/>
+      <text x="210" y="55" font-size="16" text-anchor="middle">🔄</text>
+      <text x="210" y="102" font-size="10" text-anchor="middle" fill="var(--ink-soft)">Dünya (dönme)</text>
+      <text x="55" y="40" font-size="16" text-anchor="middle">➡️</text>
+      <text x="55" y="25" font-size="10" text-anchor="middle" fill="var(--ink-soft)">Dolanma yönü</text>
+    </svg>`
+  };
+  TOPIC_DIAGRAMS.m6a = TOPIC_DIAGRAMS.m6b = `<svg viewBox="0 0 220 130" width="100%" style="max-width:280px;display:block;margin:8px auto" role="img" aria-label="Dikdörtgen ölçüleri">
+    <rect x="40" y="32" width="130" height="60" fill="var(--green)" fill-opacity="0.15" stroke="var(--green)" stroke-width="3"/>
+    <text x="105" y="20" font-size="11" fill="var(--ink-soft)" text-anchor="middle">uzun kenar</text>
+    <text x="18" y="62" font-size="11" fill="var(--ink-soft)" text-anchor="middle" transform="rotate(-90 18 62)">kısa kenar</text>
+    <text x="105" y="112" font-size="11" fill="var(--ink)" text-anchor="middle">Çevre = 2×(kısa+uzun)</text>
+    <text x="105" y="126" font-size="11" fill="var(--ink)" text-anchor="middle">Alan = kısa × uzun</text>
+  </svg>`;
+
+  /* ---------- static question bank (non-math), 2 per unit ---------- */
+  const QUESTIONS = {
+    tema1:[ {q:"'Suyun sıcak.' cümlesinde 'sıcak' sözcüğü hangi anlamda kullanılmıştır?", opts:['Gerçek anlam','Mecaz anlam','Terim anlam','Zıt anlam'], correct:0, tier:'kolay', explain:"Sözcük burada kendi asıl, ilk akla gelen anlamıyla kullanılmış; bu yüzden gerçek anlamdır. Mecazda sözcük başka bir şeye benzetilerek kullanılır (örn. 'sıcak bir gülümseme')."},
+            {q:"'Güzel' sözcüğünün zıt (karşıt) anlamlısı hangisidir?", opts:['Çirkin','Hızlı','Küçük','Neşeli'], correct:0, tier:'orta', explain:"Zıt anlam, bir sözcüğün tam tersi anlama gelen sözcüktür. 'Güzel' iyi görünüşlü demektir, tam tersi 'çirkin'dir."},
+            {q:"Boşluğu tamamla: 'Güzel' kelimesinin zıt anlamlısı ______.", type:'yazili', answers:['çirkin'], tier:'orta', explain:"Zıt anlamlı kelime, bir kelimenin tam tersi anlama gelen kelimedir. 'Güzel'in zıddı 'çirkin'dir."} ],
+    tema2:[ {q:"'Damlaya damlaya göl olur.' sözü ne anlama gelir?", opts:['Küçük birikimler zamanla büyür','Su israf edilmemeli','Göller damlalardan oluşur','Yağmur yağınca göl oluşur'], correct:0, tier:'kolay', explain:"Atasözleri gerçek anlamının ötesinde bir ders verir. Bu söz, küçük ama düzenli çabaların zamanla büyük bir sonuç doğuracağını anlatır."},
+            {q:"Soru bildiren bir cümlenin sonuna hangi noktalama işareti konur?", opts:['Soru işareti','Nokta','Virgül','Ünlem'], correct:0, tier:'orta', explain:"Bir şey sorulduğunda cümle sonuna soru işareti (?) konur. Nokta düz cümlelerde, ünlem ise duygu bildiren cümlelerde kullanılır."},
+            {q:"Boşluğu tamamla: Soru bildiren bir cümlenin sonuna ______ işareti konur.", type:'yazili', answers:['soru','soru işareti'], tier:'orta', explain:"Bir şey sorduğumuzda cümle sonuna soru işareti (?) koyarız."} ],
+    tema3:[ {q:"'Yağmur yağdığı için sokaklar ıslandı.' cümlesinde hangi ilişki vardır?", opts:['Sebep-sonuç','Amaç-sonuç','Karşılaştırma','Zaman'], correct:0, tier:'kolay', explain:"'...dığı için' kalıbı bir olayın nedenini gösterir: yağmur (sebep) → sokakların ıslanması (sonuç)."},
+            {q:'Özel isimlerin baş harfi nasıl yazılır?', opts:['Büyük harfle','Küçük harfle','İtalik olarak','Numarayla'], correct:0, tier:'orta', explain:"İnsan, hayvan, yer ve ülke adları gibi özel isimlerin ilk harfi her zaman büyük yazılır (örn. Ayşe, İstanbul)."},
+            {q:"Boşluğu tamamla: Özel isimlerin ilk harfi ______ yazılır.", type:'yazili', answers:['büyük','büyük harfle'], tier:'orta', explain:"Kişi, yer ve ülke adları gibi özel isimlerin ilk harfi her zaman büyük yazılır."} ],
+    tema4:[ {q:'Bir olayı zaman sırasına göre anlatan yazı türü hangisidir?', opts:['Hikâye','Şiir','Tarif','Dilekçe'], correct:0, tier:'kolay', explain:"Hikâyede olaylar başından sonuna, zaman sırasına göre anlatılır. Şiir duygu ve düşünceyi ölçülü/kafiyeli anlatır."},
+            {q:'Şiirlerde satır sonlarındaki ses benzerliğine ne denir?', opts:['Kafiye (uyak)','Vurgu','Durak','Ölçü'], correct:0, tier:'orta', explain:"Dizelerin sonundaki ses benzerliğine kafiye (uyak) denir; şiire müzikal bir ahenk katar."},
+            {q:"Boşluğu tamamla: Bir olayı zaman sırasına göre anlatan yazı türüne ______ denir.", type:'yazili', answers:['hikaye','hikâye'], tier:'orta', explain:"Bir olayı başından sonuna, zaman sırasıyla anlatan yazı türüne hikâye denir."} ],
+    tema5:[ {q:"'Kırmızı elma' ifadesinde 'kırmızı' sözcüğü hangi tür sözcüktür?", opts:['Sıfat','İsim','Zamir','Fiil'], correct:0, tier:'kolay', explain:"'Kırmızı' sözcüğü ismi (elma'yı) nitelendiriyor, yani onun nasıl olduğunu söylüyor; bu yüzden sıfattır."},
+            {q:"'O bugün okula gitti.' cümlesinde 'o' sözcüğü hangi tür sözcüktür?", opts:['Zamir','İsim','Sıfat','Fiil'], correct:0, tier:'orta', explain:"'O' bir ismin yerini tutuyor (kişinin adı söylenmeden anlatılıyor), bu yüzden zamirdir."},
+            {q:"Boşluğu tamamla: 'Kırmızı elma' ifadesinde 'kırmızı' kelimesi bir ______ dır.", type:'yazili', answers:['sıfat'], tier:'orta', explain:"'Kırmızı' kelimesi 'elma'nın nasıl olduğunu anlatıyor, yani onu niteliyor; bu yüzden sıfattır."} ],
+    tema6:[ {q:"'Koşmak, gülmek, okumak' sözcükleri hangi türdendir?", opts:['Fiil (eylem)','İsim','Sıfat','Zamir'], correct:0, tier:'kolay', explain:"Bu sözcükler bir hareketi/işi anlatıyor, yani fiildir (eylemdir). İpucu: '-mak/-mek' ile biten sözcükler genelde fiildir."},
+            {q:"'Ali topu attı.' cümlesinde 'topu' sözcüğü cümlenin hangi ögesidir?", opts:['Nesne','Özne','Yüklem','Zarf tümleci'], correct:0, tier:'orta', explain:"Eylemden etkilenen şey nesnedir: Ali neyi attı? Topu. Bu yüzden 'topu' nesnedir."},
+            {q:"Boşluğu tamamla: Koşmak, gülmek, okumak gibi sözcüklere ______ denir.", type:'yazili', answers:['fiil','eylem'], tier:'orta', explain:"Bir işi, hareketi ya da oluşu anlatan sözcüklere fiil (eylem) denir."} ],
+    tema7:[ {q:"'Hem çalıştı hem de dinlendi.' cümlesinde 'hem...hem' hangi görevdedir?", opts:['Bağlaç','İsim','Sıfat','Zamir'], correct:0, tier:'kolay', explain:"'Hem...hem' iki eylemi/durumu birbirine bağlıyor, bu yüzden bağlaçtır."},
+            {q:'Sütun grafiğinde en yüksek sütun neyi gösterir?', opts:['En büyük değeri','En küçük değeri','Ortalamayı','Toplamı'], correct:0, tier:'orta', explain:"Sütun grafiğinde sütunun yüksekliği o değerin büyüklüğüyle orantılıdır; en yüksek sütun en büyük değeri gösterir."},
+            {q:"Boşluğu tamamla: 'Hem çalıştı hem de dinlendi.' cümlesindeki 'hem...hem' bir ______ dır.", type:'yazili', answers:['bağlaç'], tier:'orta', explain:"Sözcükleri ya da cümleleri birbirine bağlayan 'hem...hem' gibi kelimelere bağlaç denir."} ],
+    tema8:[ {q:"'Ne kadar güzel bir gün!' cümlesi ne tür bir cümledir?", opts:['Ünlem cümlesi','Soru cümlesi','Olumsuz cümle','Emir cümlesi'], correct:0, tier:'kolay', explain:"Şaşırma, sevinme gibi güçlü bir duygu anlatan ve genelde ünlem işaretiyle biten cümleler ünlem cümlesidir."},
+            {q:"Boşluğu tamamla: 'Ne kadar güzel bir gün!' cümlesi bir ______ cümlesidir.", type:'yazili', answers:['ünlem'], tier:'orta', explain:"Şaşırma ya da sevinme gibi güçlü bir duyguyu anlatan, genelde '!' ile biten cümlelere ünlem cümlesi denir."},
+            {q:"'Kitabı okumadım.' cümlesi hangi tür bir cümledir?", opts:['Olumsuz cümle','Olumlu cümle','Soru cümlesi','Ünlem cümlesi'], correct:0, tier:'orta', explain:"'-me/-ma' olumsuzluk eki eylemin yapılmadığını anlatır ('okumadım'), bu yüzden cümle olumsuzdur."} ],
+    f1:[ {q:"Dünya'nın kendi ekseni etrafında dönmesi neyi oluşturur?", opts:['Gece ve gündüzü','Mevsimleri','Depremi','Yağmuru'], correct:0, tier:'kolay', explain:"Dünya kendi etrafında (eksen hareketi) 24 saatte bir tur atar; Güneş'e dönük yüz gündüz, arka yüz gece olur."},
+         {q:"Dünya'nın Güneş etrafında dönmesine ne denir?", opts:['Dolanma (yörünge) hareketi','Eksen hareketi','Yer çekimi','Manyetik alan'], correct:0, tier:'orta', explain:"Dünya'nın Güneş çevresindeki 1 yıllık turuna dolanma (yörünge) hareketi denir ve mevsimleri oluşturur."} ],
+    f2:[ {q:'Vücudumuza enerji veren temel besin öğelerinden biri hangisidir?', opts:['Karbonhidrat','Su','Oksijen','Tuz'], correct:0, tier:'kolay', explain:"Ekmek, pirinç gibi besinlerdeki karbonhidratlar vücudumuzun ana enerji kaynağıdır."},
+         {q:'Dengeli beslenme için tabağımızda neler bulunmalıdır?', opts:['Her besin grubundan yeterli miktar','Sadece et','Sadece şekerli yiyecekler','Sadece meyve'], correct:0, tier:'orta', explain:"Sağlıklı büyümek için tek bir besin grubu yetmez; sebze, meyve, tahıl, süt ve et grubundan dengeli almak gerekir."} ],
+    f3:[ {q:'Bir cismi itmek veya çekmek etkisine ne denir?', opts:['Kuvvet','Isı','Işık','Ses'], correct:0, tier:'kolay', explain:"Bir cismi hareket ettiren, durduran ya da şeklini değiştiren itme-çekme etkisine kuvvet denir."},
+         {q:'İki yüzeyin temas ederek hareketi zorlaştırmasına ne denir?', opts:['Sürtünme kuvveti','Yer çekimi','Manyetik kuvvet','Elektrik kuvveti'], correct:0, tier:'orta', explain:"Yüzeyler birbirine sürtünürken hareketi yavaşlatan kuvvete sürtünme kuvveti denir (örn. pürüzlü zeminde kaymanın zor olması)."} ],
+    f4:[ {q:'Maddenin katı, sıvı ve gaz olmak üzere kaç hâli vardır?', opts:['3','2','4','5'], correct:0, tier:'kolay', explain:"Madde 3 temel hâlde bulunur: katı (buz), sıvı (su), gaz (su buharı)."},
+         {q:'Isı verildiğinde katı madde genellikle hangi hâle geçebilir?', opts:['Sıvı hâle','Değişmez','Daha sert olur','Renk değiştirir'], correct:0, tier:'orta', explain:"Isı verilince katı madde erir ve sıvı hâle geçer (örn. buz ısıtılınca suya dönüşür)."} ],
+    f5:[ {q:'Kendiliğinden ışık veren cisimlere ne denir?', opts:['Işık kaynağı','Ayna','Mercek','Gölge'], correct:0, tier:'kolay', explain:"Güneş, ampul gibi kendisi ışık üreten cisimlere ışık kaynağı denir. Ay ise ışık üretmez, Güneş ışığını yansıtır."},
+         {q:'Ses hangi ortamda yayılmaz?', opts:['Boşlukta (vakumda)','Havada','Suda','Katı maddede'], correct:0, tier:'orta', explain:"Sesin yayılabilmesi için titreşimi taşıyacak bir madde (hava, su, katı) gerekir. Boşlukta madde olmadığı için ses yayılmaz."} ],
+    f6:[ {q:'İnsan eliyle oluşturulan çevreye ne denir?', opts:['Yapay çevre','Doğal çevre','Orman','Deniz'], correct:0, tier:'kolay', explain:"Bina, yol, park gibi insanın inşa ettiği ortamlara yapay çevre denir. Orman ve deniz ise doğal çevredir."},
+         {q:'Geri dönüşüm neden önemlidir?', opts:['Doğal kaynakları korur','Çöpü artırır','Havayı kirletir','Suyu tüketir'], correct:0, tier:'orta', explain:"Kâğıt, plastik gibi atıklar geri dönüştürülünce yeniden kullanılır, böylece doğal kaynaklar daha az tüketilir."} ],
+    f7:[ {q:'Basit bir elektrik devresinde enerji kaynağı hangisidir?', opts:['Pil','Anahtar','Kablo','Ampul'], correct:0, tier:'kolay', explain:"Devreye elektrik enerjisini sağlayan parça pildir. Kablo enerjiyi taşır, ampul ise enerjiyi ışığa çevirir."},
+         {q:'Bir devrede ampulün yanması için devre nasıl olmalıdır?', opts:['Kapalı (tam) devre olmalı','Açık devre olmalı','Kablo olmamalı','Pil ters bağlanmalı'], correct:0, tier:'orta', explain:"Elektrik akımının akabilmesi için devrenin baştan sona kesintisiz, yani kapalı bir devre olması gerekir."} ],
+    s1:[ {q:'Her bireyin sahip olduğu, herkes için geçerli olan temel haklara ne denir?', opts:['İnsan hakları','Aile kuralları','Okul kuralları','Trafik kuralları'], correct:0, tier:'kolay', explain:"Yaşama, eğitim, sağlık gibi her insanın doğuştan sahip olduğu haklara insan hakları denir."},
+         {q:'Bir görevi yerine getirme yükümlülüğüne ne denir?', opts:['Sorumluluk','Hak','İstek','Alışkanlık'], correct:0, tier:'orta', explain:"Yapmamız gereken bir görevi yerine getirmeye sorumluluk denir (örn. odamızı toplamak)."} ],
+    s2:[ {q:'Masal, türkü gibi elle tutulamayan ama nesilden nesile aktarılan mirasa ne denir?', opts:['Somut olmayan kültürel miras','Doğal miras','Yazılı miras','Maddi miras'], correct:0, tier:'kolay', explain:"Masal, türkü, oyun gibi elle tutulamayan ama kuşaktan kuşağa aktarılan değerlere somut olmayan kültürel miras denir."},
+         {q:'Camiler, köprüler gibi tarihi yapılar hangi tür mirastır?', opts:['Somut kültürel miras','Somut olmayan miras','Doğal miras','Sözlü miras'], correct:0, tier:'orta', explain:"Elle tutulabilen, görülebilen tarihi yapılar somut kültürel mirastır."} ],
+    s3:[ {q:'Bir yerin küçültülerek üstten çizilmesine ne denir?', opts:['Harita','Pusula','Küre','Takvim'], correct:0, tier:'kolay', explain:"Bir bölgenin kuşbakışı ve küçültülmüş çizimine harita denir."},
+         {q:'Haritalarda yönleri gösteren işarete ne denir?', opts:['Yön oku (pusula gülü)','Ölçek','Lejant','Kroki'], correct:0, tier:'orta', explain:"Haritada kuzey-güney-doğu-batı yönlerini gösteren oka yön oku (pusula gülü) denir."} ],
+    s4:[ {q:'Geçmişte mektupla yapılan haberleşme günümüzde çoğunlukla hangisiyle yapılır?', opts:['İnternet/telefon','Güvercinle','Trenle','Atla'], correct:0, tier:'kolay', explain:"Teknoloji geliştikçe haberleşme hızlandı; artık mektup yerine çoğunlukla telefon ve internet kullanılıyor."},
+         {q:'Teknolojik gelişmelerin hayatımıza kattığı en önemli şey nedir?', opts:['Kolaylık ve hız','Zaman kaybı','Zorluk','Yavaşlık'], correct:0, tier:'orta', explain:"Teknoloji işleri daha hızlı ve kolay yapmamızı sağlar (örn. mesaj anında ulaşır)."} ],
+    s5:[ {q:'Bir ürünün üretilip tüketiciye ulaştırılmasına ne denir?', opts:['Dağıtım','Üretim','Reklam','Tüketim'], correct:0, tier:'kolay', explain:"Ürünün fabrikadan mağazaya, oradan bize ulaşma sürecine dağıtım denir."},
+         {q:'Bilinçli bir tüketici alışveriş yaparken en çok neye dikkat etmelidir?', opts:['İhtiyaca ve son kullanma tarihine','Sadece rengine','Sadece markaya','Sadece fiyatın yüksekliğine'], correct:0, tier:'orta', explain:"Bilinçli tüketici gerçekten ihtiyacı olanı alır ve özellikle gıda ürünlerinde son kullanma tarihine bakar."} ],
+    s6:[ {q:"Bir şehrin temizlik, ulaşım gibi yerel hizmetlerinden hangi kurum sorumludur?", opts:['Belediye','Okul','Hastane','Market'], correct:0, tier:'kolay', explain:"Şehrin temizlik, su, yol gibi günlük hizmetlerini belediye yürütür."},
+         {q:'Vatandaşların yöneticilerini seçtiği yönetim biçimine ne denir?', opts:['Demokrasi','Monarşi','Anarşi','Oligarşi'], correct:0, tier:'orta', explain:"Halkın oy vererek yöneticilerini seçtiği yönetim biçimine demokrasi denir."} ],
+    s7:[ {q:'Farklı ülkelerin kültürlerini öğrenmek bize ne kazandırır?', opts:['Hoşgörü ve farkındalık','Önyargı','Kavga','Yalnızlık'], correct:0, tier:'kolay', explain:"Başka kültürleri tanımak, farklılıklara saygı duymayı (hoşgörüyü) ve dünyayı daha geniş görmeyi sağlar."},
+         {q:'Ülkeler arasındaki mal alışverişine ne denir?', opts:['Ticaret','Savaş','Göç','Tatil'], correct:0, tier:'orta', explain:"Ülkelerin birbirlerine mal/ürün satıp almasına ticaret denir."} ],
+    i1:[ {q:"'Nice to meet you.' ifadesinin Türkçe anlamı nedir?", opts:['Tanıştığımıza memnun oldum','Hoşça kal','Günaydın','Teşekkür ederim'], correct:0, tier:'kolay', explain:"'Nice to meet you' yeni tanışılan biriyle söylenen kibar bir ifadedir: 'Tanıştığımıza memnun oldum.'"},
+         {q:"'What is your name?' sorusuna en uygun cevap hangisidir?", opts:['My name is Ayşe.','I am fine.','See you.','Thank you.'], correct:0, tier:'orta', explain:"'What is your name?' isim sorar, bu yüzden cevap ismini söylemelidir: 'My name is ...'"} ],
+    i2:[ {q:"'Hand' kelimesinin Türkçe karşılığı nedir?", opts:['El','Ayak','Baş','Göz'], correct:0, tier:'kolay', explain:"'Hand' = el demektir. 'Foot' ayak, 'head' baş, 'eye' göz anlamına gelir."},
+         {q:"'I have got two ___.' cümlesinde boşluğa hangisi gelir?", opts:['eyes','eye','an eye','the eye'], correct:0, tier:'orta', explain:"'Two' (iki) sayısından sonra çoğul kullanılır, bu yüzden 'eyes' doğrudur."} ],
+    i3:[ {q:"'Hospital' kelimesi neyi ifade eder?", opts:['Hastane','Okul','Market','Park'], correct:0, tier:'kolay', explain:"'Hospital' = hastane demektir. 'School' okul, 'shop' market anlamına gelir."},
+         {q:"'Turn left.' ifadesi ne demektir?", opts:['Sola dön','Sağa dön','Düz git','Dur'], correct:0, tier:'orta', explain:"'Left' sol, 'right' sağ demektir. 'Turn left' = sola dön."} ],
+    i4:[ {q:"'Lion' hangi hayvandır?", opts:['Aslan','Fil','Kaplumbağa','Tavşan'], correct:0, tier:'kolay', explain:"'Lion' = aslan demektir. 'Elephant' fil, 'turtle' kaplumbağa, 'rabbit' tavşan anlamına gelir."},
+         {q:"'Elephants can swim.' cümlesinde 'can' hangi anlamı katar?", opts:['Yapabilme (yetenek)','Zorunluluk','Geçmiş zaman','Soru'], correct:0, tier:'orta', explain:"'Can' bir şeyi yapabilme (yetenek) bildirir: 'Elephants can swim' = 'Filler yüzebilir.'"} ],
+    i5:[ {q:"'Cow' kelimesinin Türkçesi nedir?", opts:['İnek','Koyun','Tavuk','At'], correct:0, tier:'kolay', explain:"'Cow' = inek demektir. 'Sheep' koyun, 'chicken' tavuk, 'horse' at anlamına gelir."},
+         {q:"'There are five ___ on the farm.' cümlesine en uygun kelime hangisidir?", opts:['sheep','sheeps','a sheep',"sheep's"], correct:0, tier:'orta', explain:"'Sheep' hem tekil hem çoğul olarak aynı yazılır (çoğulu 'sheeps' değildir), bu yüzden 'five sheep' doğrudur."} ],
+    i6:[ {q:"'Kitchen' hangi oda anlamına gelir?", opts:['Mutfak','Yatak odası','Banyo','Oturma odası'], correct:0, tier:'kolay', explain:"'Kitchen' = mutfak demektir. 'Bedroom' yatak odası, 'bathroom' banyo anlamına gelir."},
+         {q:"'The book is ___ the table.' cümlesinde boşluğa hangisi gelir?", opts:['on','is','has','can'], correct:0, tier:'orta', explain:"Bir şeyin başka bir şeyin üstünde olduğunu anlatmak için 'on' edatı kullanılır: 'on the table' = masanın üstünde."} ],
+    i7:[ {q:"'Pencil' kelimesi neyi ifade eder?", opts:['Kalem','Silgi','Defter','Çanta'], correct:0, tier:'kolay', explain:"'Pencil' = kalem demektir. 'Eraser' silgi, 'notebook' defter, 'bag' çanta anlamına gelir."},
+         {q:"'My favourite subject is ___.' cümlesine en uygun kelime hangisidir?", opts:['Maths','Run','Blue','Monday'], correct:0, tier:'orta', explain:"'Subject' ders demektir, bu yüzden boşluğa bir ders adı gelmelidir: 'Maths' (Matematik)."} ],
+    i8:[ {q:"'I wake up at seven o'clock.' cümlesi ne anlama gelir?", opts:['Saat yedide uyanırım','Saat yedide uyurum','Saat yedide yerim','Saat yedide giderim'], correct:0, tier:'kolay', explain:"'Wake up' = uyanmak demektir. 'I wake up at seven' = 'Saat yedide uyanırım.'"},
+         {q:"'What time is it?' sorusuna uygun cevap hangisidir?", opts:["It's three o'clock.",'I am Ali.',"It's Monday.",'I like it.'], correct:0, tier:'orta', explain:"'What time is it?' saati sorar, bu yüzden cevap saat bildirmelidir: 'It's three o'clock.'"} ],
+    i9:[ {q:"'Let's play!' ifadesi ne anlama gelir?", opts:['Hadi oynayalım!','Hoşça kal!','Yardım et!','Otur!'], correct:0, tier:'kolay', explain:"'Let's + fiil' bir şeyi birlikte yapmayı teklif eder: 'Let's play!' = 'Hadi oynayalım!'"},
+         {q:"'Whose turn is it?' sorusu ne sorar?", opts:['Sıra kimde?','Saat kaç?','Nerede?','Kaç yaşında?'], correct:0, tier:'orta', explain:"'Whose turn' 'kimin sırası' demektir; oyunlarda sırayı sormak için kullanılır."} ],
+    d1:[ {q:'Evrendeki her şeyin yaratıcısı olarak kabul edilen kimdir?', opts:['Allah','İnsan','Doğa','Zaman'], correct:0, tier:'kolay', explain:"İslam inancına göre evrendeki her şeyin yaratıcısı Allah'tır."},
+         {q:"Allah'ın birliğine inanmaya ne denir?", opts:['Tevhit inancı','Şirk','İnkâr','Şüphe'], correct:0, tier:'orta', explain:"Allah'ın tek ve eşsiz olduğuna inanmaya tevhit inancı denir."} ],
+    d2:[ {q:"Kur'an-ı Kerim hangi dilde indirilmiştir?", opts:['Arapça','Türkçe','Farsça','İngilizce'], correct:0, tier:'kolay', explain:"Kur'an-ı Kerim Arapça olarak indirilmiştir."},
+         {q:"Kur'an-ı Kerim kaç cüzden oluşur?", opts:['30','10','50','114'], correct:0, tier:'orta', explain:"Kur'an-ı Kerim 30 cüzden oluşur; 114 ise sure (bölüm) sayısıdır, cüz sayısıyla karıştırılmamalı."} ],
+    d3:[ {q:'Hz. Muhammed hangi şehirde doğmuştur?', opts:['Mekke','Medine','Kudüs','İstanbul'], correct:0, tier:'kolay', explain:"Hz. Muhammed Mekke şehrinde doğmuştur."},
+         {q:"Hz. Muhammed'in güzel ahlakına örnek olarak hangisi söylenebilir?", opts:['Doğruluk ve güvenilirlik','Yalancılık','Bencillik','Kabalık'], correct:0, tier:'orta', explain:"Hz. Muhammed doğruluğu ve güvenilirliğiyle tanınırdı, 'Muhammedü'l-Emin' (güvenilir Muhammed) diye anılırdı."} ],
+    d4:[ {q:'Başkalarına yardım etmek nasıl bir davranıştır?', opts:['İyi bir davranış','Kötü bir davranış','Gereksiz bir davranış','Yanlış bir davranış'], correct:0, tier:'kolay', explain:"Yardımlaşmak, sevgi ve dayanışmayı güçlendiren güzel bir davranıştır."},
+         {q:'Yalan söylememek hangi değerle ilgilidir?', opts:['Doğruluk','Cimrilik','Tembellik','Kibir'], correct:0, tier:'orta', explain:"Her zaman gerçeği söylemek doğruluk değeriyle ilgilidir."} ],
+    d5:[ {q:'İhtiyacı olanlarla paylaşmaya ne denir?', opts:['Yardımlaşma','Bencillik','Cimrilik','Kavga'], correct:0, tier:'kolay', explain:"Sahip olduklarımızı ihtiyacı olanlarla bölüşmeye yardımlaşma denir."},
+         {q:'Büyüklere karşı nasıl davranılmalıdır?', opts:['Saygılı davranılmalı','Kaba davranılmalı','Görmezden gelinmeli','Alay edilmeli'], correct:0, tier:'orta', explain:"Büyüklerimize karşı saygılı olmak önemli bir değerimizdir."} ],
+    tr1:[ {q:'Kırmızı ışıkta ne yapılmalıdır?', opts:['Durulmalı','Hızlanılmalı','Korna çalınmalı','Geçilmeli'], correct:0, tier:'kolay', explain:"Kırmızı ışık 'dur' anlamına gelir; araçlar ve yayalar kırmızıda mutlaka durmalıdır."},
+          {q:'Yaya geçidinin işlevi nedir?', opts:['Yayaların güvenle karşıya geçmesini sağlamak','Araçların hızlanması','Otopark alanı olmak','Bisiklet yolu olmak'], correct:0, tier:'orta', explain:"Yaya geçidi (zebra geçidi) yayaların yolu güvenle geçebileceği özel olarak çizilmiş bölümdür."} ],
+    tr2:[ {q:'Karşıdan karşıya geçmeden önce ne yapılmalıdır?', opts:['Sağa sola bakılmalı','Koşulmalı','Telefon açılmalı','Göz kapatılmalı'], correct:0, tier:'kolay', explain:"Karşıya geçmeden önce mutlaka sağa ve sola bakıp gelen araç olmadığından emin olunmalıdır."},
+          {q:'Kaldırımda yürürken en güvenli davranış hangisidir?', opts:['Kaldırımın iç kısmından yürümek','Yola yakın yürümek','Koşarak yürümek','Gözü kapalı yürümek'], correct:0, tier:'orta', explain:"Yola en uzak, kaldırımın iç kısmından yürümek araçlara karşı en güvenli davranıştır."} ],
+    tr3:[ {q:'Araçta otururken ne takılmalıdır?', opts:['Emniyet kemeri','Kulaklık','Şapka','Eldiven'], correct:0, tier:'kolay', explain:"Ani fren veya kazada bizi koruyan en önemli araç emniyet kemeridir; her zaman takılmalıdır."},
+          {q:'Okul servisinden inerken nasıl davranılmalıdır?', opts:['Sağa sola bakarak dikkatli inilmeli','Koşarak inilmeli','Arkaya bakmadan koşulmalı','Kapıyı açık bırakmalı'], correct:0, tier:'orta', explain:"Servisten inerken etraftaki araçları kontrol etmek için sağa sola bakarak dikkatli inmek gerekir."} ]
+  };
+
+  /* ---------- math question generator (tested) ---------- */
+  function numDistractors(correct, count, spread, min, exclude){
+    min = min===undefined?0:min;
+    const set = new Set([correct, ...(exclude||[])]);
+    const startSize = set.size;
+    let guard=0;
+    while(set.size < startSize+count && guard<400){
+      guard++;
+      const d = correct + randInt(-spread, spread);
+      if(d>=min && !set.has(d)) set.add(d);
+    }
+    const out = [...set].filter(x=>x!==correct && !(exclude||[]).includes(x));
+    let filler=1;
+    while(out.length<count){ const f=correct+filler*(spread+1); if(!set.has(f)){ out.push(f); set.add(f); } filler++; }
+    return out.slice(0,count);
+  }
+  function buildMCQ(correctText, distractorTexts){
+    const options = shuffle([correctText, ...distractorTexts]);
+    return { opts: options, correct: options.indexOf(correctText) };
+  }
+  function genMath(unitId, tier){
+    if(unitId==='m1'){
+      const digits = tier==='kolay'?4:tier==='orta'?5:6;
+      const a = randInt(Math.pow(10,digits-1), Math.pow(10,digits)-1);
+      let b = randInt(Math.pow(10,digits-1), Math.pow(10,digits)-1);
+      while(b===a) b = randInt(Math.pow(10,digits-1), Math.pow(10,digits)-1);
+      const bigger = Math.max(a,b), smaller = Math.min(a,b);
+      const q = `Aşağıdaki sayılardan hangisi daha büyüktür?\n${a} mi, ${b} mi?`;
+      const distractors = numDistractors(bigger,3, Math.pow(10,digits-2)||5, 0).map(String);
+      const r = buildMCQ(String(bigger), distractors);
+      const explain = `İki sayının basamak sayısı aynıysa, en soldaki basamaktan başlayarak karşılaştır. ${bigger} sayısı ${smaller} sayısından daha büyüktür.`;
+      return { q, opts:r.opts, correct:r.correct, explain };
+    }
+    if(unitId==='m2'){
+      const range = tier==='kolay'?100:tier==='orta'?1000:10000;
+      let a = randInt(Math.floor(range/2), range);
+      let b = randInt(1, Math.floor(range/2));
+      const op = Math.random()<0.5?'+':'-';
+      const correct = op==='+'? a+b : a-b;
+      const q = `${a} ${op} ${b} = ?`;
+      const distractors = numDistractors(correct,3, Math.max(5,Math.floor(range/20)), 0).map(String);
+      const r = buildMCQ(String(correct), distractors);
+      const explain = op==='+'
+        ? `Toplarken önce birler basamağını, sonra onlar, yüzler basamağını topla; gerekiyorsa elde aktar. ${a} + ${b} = ${correct}.`
+        : `Çıkarırken büyük sayıdan küçüğü basamak basamak çıkar; yetmiyorsa bir üst basamaktan ödünç al. ${a} - ${b} = ${correct}.`;
+      return { q, opts:r.opts, correct:r.correct, explain };
+    }
+    if(unitId==='m3'){
+      if(Math.random()<0.5){
+        const a = tier==='kolay'?randInt(2,9):randInt(11,99);
+        const b = tier==='kolay'?randInt(10,99):tier==='orta'?randInt(10,99):randInt(100,999);
+        const correct = a*b;
+        const q = `${a} x ${b} = ?`;
+        const distractors = numDistractors(correct,3, Math.max(10,Math.round(correct*0.1)), 0).map(String);
+        const r = buildMCQ(String(correct), distractors);
+        const explain = `Çarpma tekrarlı toplamadır. ${b} sayısını ${a} basamağına göre parçalara ayırıp çarp, sonra topla: ${a} x ${b} = ${correct}.`;
+        return { q, opts:r.opts, correct:r.correct, explain };
+      } else {
+        const divisor = tier==='kolay'?randInt(2,9):randInt(2,12);
+        const quotient = tier==='kolay'?randInt(2,9):tier==='orta'?randInt(10,50):randInt(50,200);
+        const dividend = divisor*quotient;
+        const q = `${dividend} : ${divisor} = ?`;
+        const distractors = numDistractors(quotient,3, Math.max(2,Math.round(quotient*0.15)), 0).map(String);
+        const r = buildMCQ(String(quotient), distractors);
+        const explain = `Bölme, eşit gruplara ayırmaktır. ${dividend} sayısını ${divisor}'e böldüğümüzde her grupta ${quotient} olur, çünkü ${divisor} x ${quotient} = ${dividend}.`;
+        return { q, opts:r.opts, correct:r.correct, explain };
+      }
+    }
+    if(unitId==='m4'){
+      const denom = tier==='kolay'?[3,4][randInt(0,1)]:tier==='orta'?randInt(3,8):randInt(6,12);
+      if(denom>=3 && Math.random()<0.5){
+        let n1=randInt(1,denom-1), n2=randInt(1,denom-1);
+        while(n1===n2) n2=randInt(1,denom-1);
+        const bigger=Math.max(n1,n2), smaller=Math.min(n1,n2);
+        const q = `${n1}/${denom} mi yoksa ${n2}/${denom} mi daha büyüktür?`;
+        const correctText = `${bigger}/${denom}`;
+        const distractors = [`${smaller}/${denom}`, `${denom}/${denom}`, `${bigger}/${denom+1}`];
+        const r = buildMCQ(correctText, distractors);
+        const explain = `Paydaları (alttaki sayı) aynı olan kesirlerde, payı (üstteki sayı) büyük olan kesir daha büyüktür. ${bigger} > ${smaller} olduğu için ${bigger}/${denom} daha büyüktür.`;
+        return { q, opts:r.opts, correct:r.correct, explain };
+      } else {
+        let n1=randInt(1,denom-1), n2=randInt(1, Math.max(1,denom-1-n1));
+        if(n1+n2>denom) n2=Math.max(1,denom-n1-1);
+        const sumN=n1+n2;
+        const q = `${n1}/${denom} + ${n2}/${denom} = ?`;
+        const correctText = `${sumN}/${denom}`;
+        const distractors = [`${sumN+1}/${denom}`, `${sumN}/${denom*2}`, `${Math.max(1,sumN-1)}/${denom}`];
+        const r = buildMCQ(correctText, distractors);
+        const explain = `Paydaları aynı olan kesirleri toplarken payları toplarız, payda aynı kalır: ${n1}+${n2}=${sumN}, yani ${n1}/${denom} + ${n2}/${denom} = ${sumN}/${denom}.`;
+        return { q, opts:r.opts, correct:r.correct, explain };
+      }
+    }
+    if(unitId==='m5'){
+      const pool = tier==='kolay'
+        ? [{d:30,t:'Dar Açı'},{d:90,t:'Dik Açı'},{d:150,t:'Geniş Açı'}]
+        : tier==='orta'
+        ? [{d:45,t:'Dar Açı'},{d:90,t:'Dik Açı'},{d:120,t:'Geniş Açı'},{d:180,t:'Doğru Açı'}]
+        : [{d:70,t:'Dar Açı'},{d:90,t:'Dik Açı'},{d:160,t:'Geniş Açı'},{d:180,t:'Doğru Açı'},{d:15,t:'Dar Açı'}];
+      const pick = pool[randInt(0,pool.length-1)];
+      const q = `${pick.d}° açısı ne tür bir açıdır?`;
+      const allTypes = ['Dar Açı','Dik Açı','Geniş Açı','Doğru Açı'];
+      const distractors = allTypes.filter(t=>t!==pick.t).slice(0,3);
+      const r = buildMCQ(pick.t, distractors);
+      const explain = `90°'den küçük açılar dar açı, tam 90° dik açı, 90°-180° arası geniş açı, tam 180° ise doğru açıdır. ${pick.d}° bu kurala göre ${pick.t.toLowerCase()}dır.`;
+      return { q, opts:r.opts, correct:r.correct, explain };
+    }
+    if(unitId==='m6'){
+      const w = tier==='kolay'?randInt(3,9):tier==='orta'?randInt(4,20):randInt(10,40);
+      const h = tier==='kolay'?randInt(3,9):tier==='orta'?randInt(4,20):randInt(10,40);
+      const askArea = Math.random()<0.5;
+      const perimeter = 2*(w+h), area = w*h;
+      const q = askArea ? `Kenar uzunlukları ${w} cm ve ${h} cm olan dikdörtgenin alanı kaç cm²'dir?`
+                         : `Kenar uzunlukları ${w} cm ve ${h} cm olan dikdörtgenin çevresi kaç cm'dir?`;
+      const correct = askArea?area:perimeter;
+      const wrongFormula = askArea?perimeter:area;
+      const usedAsWrong = wrongFormula!==correct;
+      const needed = usedAsWrong?2:3;
+      const excl = usedAsWrong?[wrongFormula]:[];
+      const others = numDistractors(correct, needed, Math.max(2,Math.round(correct*0.1)), 0, excl).map(String);
+      const distractors = usedAsWrong ? [String(wrongFormula), ...others] : others;
+      const r = buildMCQ(String(correct), distractors);
+      const explain = askArea
+        ? `Dikdörtgenin alanı = kısa kenar x uzun kenar. ${w} x ${h} = ${area} cm².`
+        : `Dikdörtgenin çevresi = tüm kenarların toplamı = 2 x (kenar + kenar). 2 x (${w} + ${h}) = ${perimeter} cm.`;
+      return { q, opts:r.opts, correct:r.correct, explain };
+    }
+    return null;
+  }
+
+  /* ---------- badges catalog ---------- */
+  const DAY_NAMES = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+  const WEEKLY_PLAN = [
+    { subjects:['turkce','matematik'] },
+    { subjects:['matematik','fen'] },
+    { subjects:['turkce','sosyal'] },
+    { subjects:['matematik','ingilizce'] },
+    { subjects:['turkce','fen'] },
+    { subjects:['sosyal','din','trafik'] },
+    { subjects:[], review:true }
+  ];
+  const ALL_PLAN_SUBJECTS = [...new Set(WEEKLY_PLAN.flatMap(d=>d.subjects))];
+
+  /* ---------- günün cümlesi ---------- */
+  const DAILY_QUOTES = [
+    "Küçük adımlar, büyük başarılar getirir.",
+    "Bilmediğin bir şeyi öğrenmek, süper güç kazanmak gibidir.",
+    "Hata yapmak öğrenmenin bir parçasıdır, denemeye devam et!",
+    "Bugün öğrendiğin her şey, yarının sen'ini daha güçlü yapar.",
+    "En güzel yolculuk, meraklı bir zihinle çıkılan yolculuktur.",
+    "Zor gelen bir konu, sadece henüz alışmadığın bir konudur.",
+    "Çalışmak, geleceğine yatırım yapmaktır.",
+    "Bugün bilmediğin bir şeyi öğrenirsen, harika bir gün geçirmişsindir.",
+    "Sen de bir yıldız kadar parlayabilirsin, yeter ki denemeye devam et!",
+    "Her doğru cevap, senin gurur duyman gereken bir başarıdır.",
+    "Öğrenmek bir yarış değil, kendi hızında ilerlediğin bir yolculuktur.",
+    "Bugün küçük bir adım at, yarın büyük bir fark yaratsın.",
+    "Merak ettiğin her soru, seni biraz daha akıllı yapar.",
+    "En iyi öğretmen, kendi çabandır.",
+    "Bir konuyu anlamak biraz zaman alabilir, sabırlı ol kendine karşı.",
+    "Bugün öğrendiklerinle yarın daha da güçlüsün!",
+    "Başarı, her gün biraz biraz çalışmaktan doğar.",
+    "Kendine inan, çünkü sen düşündüğünden daha yeteneklisin.",
+    "Her yeni gün, yeni bir şey öğrenmek için harika bir fırsattır.",
+    "Pes etmeyen herkes, er ya da geç başarır."
+  ];
+  function todaysQuote(){
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now - start) / 86400000);
+    return DAILY_QUOTES[dayOfYear % DAILY_QUOTES.length];
+  }
+
+  /* ---------- konfeti ---------- */
+  const prefersReducedMotion = typeof window!=='undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function renderConfetti(count){
+    if(prefersReducedMotion) return '';
+    const colors = ['var(--accent)','var(--yellow)','var(--blue)','var(--pink)','var(--green)','var(--purple)'];
+    let pieces = '';
+    for(let i=0;i<count;i++){
+      const left = (Math.random()*100).toFixed(1);
+      const color = colors[i%colors.length];
+      const delay = (Math.random()*0.4).toFixed(2);
+      const dur = (1.6+Math.random()*0.9).toFixed(2);
+      pieces += `<div class="confetti-piece" style="left:${left}%;background:${color};animation-delay:${delay}s;animation-duration:${dur}s"></div>`;
+    }
+    return `<div class="confetti-container">${pieces}</div>`;
+  }
+
+  const BADGE_DEFS = [
+    { id:'ilk_adim', emoji:'🌱', name:'İlk Adım', desc:'İlk konunu "Öğrenildi" olarak işaretlediğinde kazanılır.', target:1, unit:'', getValue:s=>s.learnedCount, cond: s=> s.learnedCount>=1 },
+    { id:'bes_konu', emoji:'📗', name:'5 Konu', desc:'Toplamda 5 konu öğrendiğinde kazanılır.', target:5, unit:'', getValue:s=>s.learnedCount, cond: s=> s.learnedCount>=5 },
+    { id:'onbes_konu', emoji:'📘', name:'15 Konu', desc:'Toplamda 15 konu öğrendiğinde kazanılır.', target:15, unit:'', getValue:s=>s.learnedCount, cond: s=> s.learnedCount>=15 },
+    { id:'tum_konular', emoji:'👑', name:'Müfredat Fatihi', desc:'Müfredattaki tüm konuları öğrendiğinde kazanılır. Bu en büyük ödül!', target:ALL_TOPICS.length, unit:'', getValue:s=>s.learnedCount, cond: s=> s.learnedCount>=ALL_TOPICS.length },
+    { id:'uc_gun', emoji:'🔥', name:'3 Gün Seri', desc:'Art arda 3 gün çalışınca kazanılır. Her gün en az bir konu tamamlamalı ya da çalışma zamanlayıcısını kullanmalısın.', target:3, unit:' gün', getValue:s=>s.streak, cond: s=> s.streak>=3 },
+    { id:'yedi_gun', emoji:'⚡', name:'7 Gün Seri', desc:'Art arda 7 gün çalışınca kazanılır. Bir haftayı hiç aksatmadan tamamlamak gerekir!', target:7, unit:' gün', getValue:s=>s.streak, cond: s=> s.streak>=7 },
+    { id:'ilk_sinav', emoji:'📝', name:'İlk Sınav', desc:'İlk günlük sınavını tamamladığında kazanılır.', target:1, unit:'', getValue:s=>s.quizCount, cond: s=> s.quizCount>=1 },
+    { id:'yildiz', emoji:'🌟', name:'Yıldız Öğrenci', desc:'Herhangi bir sınavda %90 ya da üzeri puan aldığında kazanılır.', target:90, unit:'%', getValue:s=>s.bestScore, cond: s=> s.bestScore>=90 },
+    { id:'ilk_yazili', emoji:'✍️', name:'İlk Yazılı Soru', desc:'Bir yazılı (boşluk doldurma) soruyu ilk kez doğru cevapladığında kazanılır.', target:1, unit:'', getValue:s=>s.writtenCorrect, cond: s=> s.writtenCorrect>=1 },
+    { id:'tam_hafta', emoji:'🗓️', name:'Tam Hafta', desc:'Bir hafta içinde programdaki tüm derslerden en az bir konu çalıştığında kazanılır.', target:ALL_PLAN_SUBJECTS.length, unit:'', getValue:s=>s.weekSubjectsCount, cond: s=> s.weekSubjectsCount>=ALL_PLAN_SUBJECTS.length },
+    { id:'ileri_seviye', emoji:'🚀', name:'İleri Seviye', desc:'Bir derste seviye puanını 90\'a çıkarıp 4. sınıf üstü sorulara geçtiğinde kazanılır.', target:4, unit:'. seviye', getValue:s=>s.maxLevel, cond: s=> s.maxLevel>=4 }
+  ];
+
+  const REWARD_DEFAULTS = [
+    { name:'15 Dakika Tablet Keyfi', emoji:'📱', cost:80 },
+    { name:'Geç Yatma İzni (30 dk)', emoji:'🌙', cost:100 },
+    { name:'İstediğin Yemeği Seçme Hakkı', emoji:'🍕', cost:120 },
+    { name:'Ek Oyun Parkı Zamanı', emoji:'🎡', cost:150 },
+    { name:'Hafta Sonu Film Gecesi', emoji:'🍿', cost:200 },
+    { name:'Küçük Bir Sürpriz Hediye', emoji:'🎁', cost:300 }
+  ];
+
+  /* ---------- state ---------- */
+  const state = {
+    db:null,
+    progress:{},      // key subjectId__topicId -> {status, updatedAt}
+    levels:{},         // subjectId -> 1|2|3|4 (rating'den türetilir)
+    ratings:{},        // subjectId -> 0..100 sürekli seviye puanı
+    mastery:{},        // subjectId__unitId -> {score, seen, correct, streak, lastSeen, dueAt}
+    stats:{ points:0, streak:0, lastActiveDate:null, quizHistory:[], redemptions:[], writtenCorrect:0 },
+    settings:{ pin:'0000' },
+    sessions:{},        // date -> minutes
+    rewards:[],          // {id, name, emoji, cost}
+    journal:{},          // date -> text
+    theme:'system',      // 'system' | 'light' | 'dark'
+    view:'home',
+    parentUnlocked:false,
+    pinInput:'',
+    openSubject:null,
+    openLesson:null,
+    chosenSubject:null,
+    openBadge:null,
+    micListening:false,
+    useAI:true,          // sınavda yapay zekâ ile taze soru üretimi
+    quizLoading:false,
+    ai:{ question:'', answer:'', loading:false, error:null },
+    timer:{ running:false, seconds:0, handle:null },
+    quiz:null           // {questions:[...], idx, answers:[], subjectsInvolved:Set}
+  };
+
+  function statusOf(subjectId, topicId){
+    const k = subjectId+'__'+topicId;
+    return (state.progress[k] && state.progress[k].status) || 'yok';
+  }
+  function setStatus(subjectId, topicId, status){
+    const k = subjectId+'__'+topicId;
+    const now = new Date().toISOString();
+    state.progress[k] = { status, updatedAt: now, subjectId, topicId };
+    render();
+    if(state.db){ state.db.doc('progress/'+k).set(state.progress[k]).catch(()=>{}); }
+  }
+  function subjectProgress(subjectId){
+    const topics = ALL_TOPICS.filter(t=>t.subjectId===subjectId);
+    const learned = topics.filter(t=>statusOf(subjectId,t.topicId)==='ogrenildi').length;
+    return { learned, total: topics.length, pct: topics.length? Math.round(learned/topics.length*100):0 };
+  }
+  function learnedCountTotal(){
+    return ALL_TOPICS.filter(t=>statusOf(t.subjectId,t.topicId)==='ogrenildi').length;
+  }
+  function bestQuizScore(){
+    return state.stats.quizHistory.reduce((m,h)=>Math.max(m,h.pct||0),0);
+  }
+  function earnedBadges(){
+    const s = { learnedCount: learnedCountTotal(), streak: state.stats.streak, quizCount: state.stats.quizHistory.length, bestScore: bestQuizScore(), writtenCorrect: state.stats.writtenCorrect||0, weekSubjectsCount: studiedThisWeekSubjects().size, maxLevel: CURRICULUM.reduce((m,x)=>Math.max(m, state.levels[x.id]||1), 1) };
+    return BADGE_DEFS.map(b=>{
+      const value = b.getValue(s);
+      const pct = Math.min(100, Math.round((value/b.target)*100));
+      return {...b, earned: b.cond(s), value, pct};
+    });
+  }
+
+  /* ---------- weekly (7 day) schedule ---------- */
+  function todayDayIndex(){ return (new Date().getDay()+6)%7; }
+  function nextTopicForSubject(subjectId){
+    const topics = ALL_TOPICS.filter(t=>t.subjectId===subjectId);
+    const tekrar = topics.find(t=>statusOf(subjectId,t.topicId)==='tekrar');
+    if(tekrar) return tekrar;
+    return topics.find(t=>{ const st=statusOf(subjectId,t.topicId); return st==='yok'||st==='ogreniliyor'; }) || null;
+  }
+  function weekMonday(){
+    const d = new Date(); const idx = todayDayIndex();
+    d.setDate(d.getDate()-idx); d.setHours(0,0,0,0);
+    return d;
+  }
+  function studiedThisWeekSubjects(){
+    const monday = weekMonday();
+    const set = new Set();
+    Object.values(state.progress).forEach(p=>{ if(p.updatedAt && new Date(p.updatedAt) >= monday) set.add(p.subjectId); });
+    return set;
+  }
+  function dueSubjectsSoFar(){
+    const idx = todayDayIndex();
+    const due = new Set();
+    for(let i=0;i<=idx;i++){ const day=WEEKLY_PLAN[i]; if(!day.review) day.subjects.forEach(s=>due.add(s)); }
+    return due;
+  }
+  function missedThisWeek(){
+    const studied = studiedThisWeekSubjects();
+    return [...dueSubjectsSoFar()].filter(s=>!studied.has(s));
+  }
+  function fmtDayMonth(d){ return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'); }
+
+  function computeWeeklyReport(){
+    const monday = weekMonday();
+    const mondayStr = monday.toISOString().slice(0,10);
+    const learned = [], tekrar = [];
+    const bySubject = {};
+    ALL_TOPICS.forEach(t=>{
+      const p = state.progress[t.subjectId+'__'+t.topicId];
+      if(!p || !p.updatedAt || new Date(p.updatedAt) < monday) return;
+      if(p.status==='ogrenildi'){ learned.push(t); bySubject[t.subjectId] = (bySubject[t.subjectId]||0)+1; }
+      else if(p.status==='tekrar'){ tekrar.push(t); }
+    });
+    const quizzes = state.stats.quizHistory.filter(q=>q.date>=mondayStr);
+    const avgScore = quizzes.length ? Math.round(quizzes.reduce((s,q)=>s+q.pct,0)/quizzes.length) : null;
+    let minutes = 0, daysActive = 0;
+    Object.keys(state.sessions).forEach(d=>{ if(d>=mondayStr && state.sessions[d]>0){ minutes += state.sessions[d]; daysActive++; } });
+    const redemptions = (state.stats.redemptions||[]).filter(r=>r.date>=mondayStr);
+    return { monday, learned, tekrar, bySubject, quizzes, avgScore, minutes, daysActive, redemptions };
+  }
+
+  function renderWeeklyReportCard(){
+    const r = computeWeeklyReport();
+    const today = new Date();
+    const rangeLabel = `${fmtDayMonth(r.monday)} – ${fmtDayMonth(today)}`;
+    const subjectRows = Object.keys(r.bySubject).length
+      ? Object.entries(r.bySubject).sort((a,b)=>b[1]-a[1]).map(([id,count])=>`
+          <div class="topic-row"><span class="tname">${SUBJECT_BY_ID[id].icon} ${esc(SUBJECT_BY_ID[id].name)}</span><span class="status-pill">${count} konu</span></div>`).join('')
+      : `<div class="muted">Bu hafta henüz konu tamamlanmadı.</div>`;
+    const redemptionsHTML = r.redemptions.length
+      ? r.redemptions.map(x=>`<div>${x.date} · ${x.emoji||'🎁'} ${esc(x.name)}</div>`).join('')
+      : `<div class="muted">Bu hafta ödül kullanılmadı.</div>`;
+    return `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <h2>📊 Haftalık Rapor</h2>
+          <button class="btn secondary" data-action="print-report" style="white-space:nowrap">🖨️ Yazdır / PDF</button>
+        </div>
+        <div class="muted" style="margin-bottom:12px">${rangeLabel} arası</div>
+        <div class="grid-subjects" style="margin-bottom:14px">
+          <div class="subj-tile" style="text-align:center"><span class="ic">✅</span><span class="nm">${r.learned.length}</span><span class="pct">Konu Öğrenildi</span></div>
+          <div class="subj-tile" style="text-align:center"><span class="ic">🔁</span><span class="nm">${r.tekrar.length}</span><span class="pct">Tekrar Gerekli</span></div>
+          <div class="subj-tile" style="text-align:center"><span class="ic">📝</span><span class="nm">${r.quizzes.length}</span><span class="pct">Sınav${r.avgScore!=null?' · %'+r.avgScore:''}</span></div>
+          <div class="subj-tile" style="text-align:center"><span class="ic">⏱️</span><span class="nm">${r.minutes} dk</span><span class="pct">${r.daysActive}/7 gün aktif</span></div>
+        </div>
+        <div class="unit-block">
+          <h3>Ders Bazında Öğrenilen Konular</h3>
+          <div class="topics">${subjectRows}</div>
+        </div>
+        <div class="unit-block" style="margin-bottom:0">
+          <h3>Kullanılan Ödüller</h3>
+          <div class="redeem-log">${redemptionsHTML}</div>
+        </div>
+      </div>`;
+  }
+
+  function buildPrintReportHTML(){
+    const r = computeWeeklyReport();
+    const today = new Date();
+    const rangeLabel = `${fmtDayMonth(r.monday)} – ${fmtDayMonth(today)}`;
+    const subjectRows = Object.keys(r.bySubject).length
+      ? Object.entries(r.bySubject).sort((a,b)=>b[1]-a[1]).map(([id,count])=>
+          `<tr><td style="padding:6px 4px;border-bottom:1px solid #ddd">${esc(SUBJECT_BY_ID[id].name)}</td><td style="padding:6px 4px;border-bottom:1px solid #ddd;text-align:right">${count} konu</td></tr>`).join('')
+      : `<tr><td style="padding:6px 4px">Bu hafta henüz konu tamamlanmadı.</td></tr>`;
+    const redemptionsRows = r.redemptions.length
+      ? r.redemptions.map(x=>`<div>${x.date} — ${esc(x.name)} (${x.cost} puan)</div>`).join('')
+      : `<div>Bu hafta ödül kullanılmadı.</div>`;
+    const total = ALL_TOPICS.length, learnedAll = learnedCountTotal();
+    const levelRows = CURRICULUM.map(s=>`<tr><td style="padding:6px 4px;border-bottom:1px solid #ddd">${esc(s.name)}</td><td style="padding:6px 4px;border-bottom:1px solid #ddd;text-align:right">${tierWord(state.levels[s.id]||1)}</td></tr>`).join('');
+    return `
+      <div style="font-family:'Nunito',system-ui,sans-serif;max-width:720px;margin:0 auto;padding:24px;color:#111">
+        <h1 style="font-family:'Baloo 2',sans-serif;margin:0 0 2px">🦉 Bilgi Baykuşu — Haftalık Rapor</h1>
+        <div style="color:#555;margin-bottom:18px">${rangeLabel} arası</div>
+        <h2 style="font-size:16px;border-bottom:2px solid #333;padding-bottom:4px">Özet</h2>
+        <ul style="line-height:1.9">
+          <li>✅ ${r.learned.length} konu öğrenildi</li>
+          <li>🔁 ${r.tekrar.length} konu tekrar gerekiyor</li>
+          <li>📝 ${r.quizzes.length} sınav yapıldı${r.avgScore!=null?`, ortalama %${r.avgScore} başarı`:''}</li>
+          <li>⏱️ ${r.minutes} dakika çalışıldı, haftanın ${r.daysActive}/7 günü aktif</li>
+          <li>📚 Toplamda ${learnedAll}/${total} konu öğrenildi</li>
+        </ul>
+        <h2 style="font-size:16px;border-bottom:2px solid #333;padding-bottom:4px;margin-top:20px">Ders Bazında Bu Hafta Öğrenilen Konular</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:14px">${subjectRows}</table>
+        <h2 style="font-size:16px;border-bottom:2px solid #333;padding-bottom:4px;margin-top:20px">Ders Seviyeleri (Sınav Zorluğu)</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:14px">${levelRows}</table>
+        <h2 style="font-size:16px;border-bottom:2px solid #333;padding-bottom:4px;margin-top:20px">Bu Hafta Kullanılan Ödüller</h2>
+        <div style="font-size:14px;line-height:1.8">${redemptionsRows}</div>
+        <div style="margin-top:28px;color:#888;font-size:12px">Bilgi Baykuşu uygulamasından oluşturuldu · ${today.toLocaleDateString('tr-TR')}</div>
+      </div>`;
+  }
+
+  function markActiveToday(extraMinutes){
+    const today = todayStr();
+    const prevMinutes = state.sessions[today] || 0;
+    state.sessions[today] = prevMinutes + (extraMinutes||0);
+    if(state.stats.lastActiveDate !== today){
+      const yest = daysAgoStr(1);
+      state.stats.streak = (state.stats.lastActiveDate===yest) ? state.stats.streak+1 : 1;
+      state.stats.lastActiveDate = today;
+    }
+    writeStats();
+    if(state.db){ state.db.doc('sessions/'+today).set({minutes: state.sessions[today]}).catch(()=>{}); }
+  }
+  function addPoints(n){
+    state.stats.points += n;
+    writeStats();
+  }
+  function writeStats(){ if(state.db){ state.db.doc('meta/stats').set(state.stats).catch(()=>{}); } }
+  function writeSettings(){ if(state.db){ state.db.doc('meta/settings').set(state.settings).catch(()=>{}); } }
+  function writeLevel(subjectId, level){
+    // Elle seviye seçimi: rating'i o bandın ortasına taşır, böylece sonraki sınavlar buradan devam eder.
+    writeRating(subjectId, ratingForLevel(level), level);
+  }
+  function ratingOf(subjectId){
+    if(state.ratings[subjectId]!=null) return state.ratings[subjectId];
+    return ratingForLevel(state.levels[subjectId]||1);
+  }
+  function writeRating(subjectId, rating, forcedLevel){
+    const r = Math.max(0, Math.min(100, Math.round(rating)));
+    const level = forcedLevel || levelFromRating(r);
+    state.ratings[subjectId] = r;
+    state.levels[subjectId] = level;
+    if(state.db){ state.db.doc('levels/'+subjectId).set({ level, rating:r }).catch(()=>{}); }
+  }
+
+  /* ---------- ünite bazlı ustalık + aralıklı tekrar ---------- */
+  const REVIEW_INTERVALS = [1,2,4,8,16,30]; // doğru seri uzadıkça tekrar aralığı açılır (gün)
+  function masteryKey(subjectId, unitId){ return subjectId+'__'+unitId; }
+  function masteryOf(subjectId, unitId){
+    return state.mastery[masteryKey(subjectId,unitId)] || { score:0, seen:0, correct:0, streak:0, lastSeen:null, dueAt:null };
+  }
+  // Bir ünitedeki doğru/yanlış sayısını ustalık puanına ve sonraki tekrar tarihine işler.
+  function applyMastery(subjectId, unitId, correctCount, wrongCount){
+    const m = { ...masteryOf(subjectId, unitId) };
+    for(let i=0;i<wrongCount;i++){
+      m.score = Math.max(0, Math.round(m.score*0.55 - 5));
+      m.streak = 0;
+    }
+    for(let i=0;i<correctCount;i++){
+      m.score = Math.min(100, Math.round(m.score + Math.max(6, (100-m.score)*0.35)));
+      m.streak = (m.streak||0) + 1;
+      m.correct = (m.correct||0) + 1;
+    }
+    m.seen = (m.seen||0) + correctCount + wrongCount;
+    const now = new Date();
+    m.lastSeen = now.toISOString();
+    const days = wrongCount>0 ? 1 : REVIEW_INTERVALS[Math.min(REVIEW_INTERVALS.length-1, Math.max(0,(m.streak||1)-1))];
+    const due = new Date(now); due.setDate(due.getDate()+days);
+    m.dueAt = due.toISOString().slice(0,10);
+    state.mastery[masteryKey(subjectId,unitId)] = m;
+    if(state.db){ state.db.doc('mastery/'+masteryKey(subjectId,unitId)).set(m).catch(()=>{}); }
+  }
+  function unitPriority(subjectId, unitId){
+    const m = masteryOf(subjectId, unitId);
+    const isDue = m.dueAt && m.dueAt<=todayStr() ? 1 : 0;
+    const unseen = m.seen===0 ? 1 : 0;
+    return (100-m.score)/100 + isDue*1.2 + unseen*0.6 + Math.random()*0.35;
+  }
+  function allUnitsByMastery(){
+    const out = [];
+    CURRICULUM.forEach(s=>s.units.forEach(u=>{
+      const m = masteryOf(s.id, u.id);
+      out.push({ subjectId:s.id, subjectName:s.name, icon:s.icon, unitId:u.id, unitName:u.name, score:m.score, seen:m.seen, dueAt:m.dueAt });
+    }));
+    return out;
+  }
+  function dueUnits(){
+    const today = todayStr();
+    return allUnitsByMastery()
+      .filter(x=>x.seen>0 && x.dueAt && x.dueAt<=today)
+      .sort((a,b)=>a.score-b.score);
+  }
+  function weakestUnits(n){
+    return allUnitsByMastery().filter(x=>x.seen>0).sort((a,b)=>a.score-b.score).slice(0,n);
+  }
+  function learnerProfileText(){
+    const levels = CURRICULUM.map(s=>`${s.name}: ${tierWord(state.levels[s.id]||1)}`).join(', ');
+    const weak = weakestUnits(3).map(x=>`${x.subjectName} / ${x.unitName}`);
+    return `Öğrencinin ders seviyeleri -> ${levels}.` + (weak.length?` En çok zorlandığı üniteler: ${weak.join('; ')}.`:'');
+  }
+  function writeJournal(date, text){
+    state.journal[date] = text;
+    if(state.db){ state.db.doc('journal/'+date).set({text}).catch(()=>{}); }
+  }
+
+  /* ---------- tema (light/dark) ---------- */
+  function applyTheme(){
+    if(state.theme==='system') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', state.theme);
+  }
+  function loadTheme(){
+    try{ const t = localStorage.getItem('bb_theme'); if(t==='light'||t==='dark') state.theme = t; }catch(e){}
+    applyTheme();
+  }
+  function cycleTheme(){
+    state.theme = state.theme==='system' ? 'light' : state.theme==='light' ? 'dark' : 'system';
+    applyTheme();
+    try{ localStorage.setItem('bb_theme', state.theme); }catch(e){}
+    render();
+  }
+
+  /* ---------- rewards ---------- */
+  function sortedRewards(){ return [...state.rewards].sort((a,b)=>a.cost-b.cost); }
+  function addReward(name, emoji, cost){
+    const local = { id:'r'+Date.now()+randInt(100,999), name, emoji: emoji||'🎁', cost: Math.max(1, Math.round(cost)) };
+    state.rewards.push(local);
+    render();
+    if(state.db){ state.db.collection('rewards').doc(local.id).set({ name: local.name, emoji: local.emoji, cost: local.cost }).catch(()=>{}); }
+  }
+  function deleteReward(id){
+    state.rewards = state.rewards.filter(r=>r.id!==id);
+    render();
+    if(state.db){ state.db.doc('rewards/'+id).delete().catch(()=>{}); }
+  }
+  function redeemReward(reward){
+    if(state.stats.points < reward.cost) return;
+    state.stats.points -= reward.cost;
+    state.stats.redemptions = (state.stats.redemptions||[]).slice(-19).concat([{ date: todayStr(), name: reward.name, emoji: reward.emoji, cost: reward.cost }]);
+    writeStats();
+    render();
+  }
+  function clearRedemptionLog(){
+    state.stats.redemptions = [];
+    writeStats();
+    render();
+  }
+
+  /* ---------- weekly quiz building ---------- */
+  function recentlyStudiedUnits(){
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-7);
+    const units = new Map(); // unitId -> subjectId
+    Object.values(state.progress).forEach(p=>{
+      if((p.status==='ogrenildi'||p.status==='tekrar') && new Date(p.updatedAt) >= cutoff){
+        const topicMeta = ALL_TOPICS.find(t=>t.subjectId===p.subjectId && t.topicId===p.topicId);
+        if(topicMeta) units.set(topicMeta.unitId, topicMeta.subjectId);
+      }
+    });
+    return units; // Map unitId -> subjectId
+  }
+  function anyStudiedUnits(){
+    const units = new Map();
+    Object.values(state.progress).forEach(p=>{
+      if(p.status==='ogrenildi'||p.status==='tekrar'){
+        const topicMeta = ALL_TOPICS.find(t=>t.subjectId===p.subjectId && t.topicId===p.topicId);
+        if(topicMeta) units.set(topicMeta.unitId, topicMeta.subjectId);
+      }
+    });
+    return units;
+  }
+  const QUIZ_QUESTION_COUNT = 20;
+
+  function buildQuiz(subjectFilter){
+    let unitsMap;
+    if(subjectFilter==='review'){
+      unitsMap = new Map();
+      dueUnits().forEach(x=>unitsMap.set(x.unitId, x.subjectId));
+      if(unitsMap.size===0) weakestUnits(4).forEach(x=>unitsMap.set(x.unitId, x.subjectId));
+    } else if(subjectFilter && subjectFilter!=='all'){
+      unitsMap = new Map();
+      const subj = SUBJECT_BY_ID[subjectFilter];
+      if(subj) subj.units.forEach(u=>unitsMap.set(u.id, subjectFilter));
+    } else {
+      unitsMap = recentlyStudiedUnits();
+      if(unitsMap.size===0) unitsMap = anyStudiedUnits();
+    }
+    if(unitsMap.size===0) return null;
+    // Zayıf, tekrarı gelmiş ve hiç çalışılmamış üniteler önce gelir (hafif rastgelelikle).
+    const unitIds = [...unitsMap.keys()].sort((a,b)=>unitPriority(unitsMap.get(b),b) - unitPriority(unitsMap.get(a),a));
+    const targetCount = QUIZ_QUESTION_COUNT;
+    const questions = [];
+    const usedNonMathTexts = new Set();
+    let i=0, guard=0;
+    while(questions.length < targetCount && guard < targetCount*6){
+      guard++;
+      const unitId = unitIds[i % unitIds.length]; i++;
+      const subjectId = unitsMap.get(unitId);
+      const level = state.levels[subjectId] || 1;
+      const tier = tierWord(level);
+      if(subjectId==='matematik'){
+        const g = genMath(unitId, tier);
+        if(g) questions.push({ subjectId, unitId, q:g.q, opts:g.opts, correct:g.correct, explain:g.explain });
+      } else {
+        const bank = QUESTIONS[unitId] || [];
+        let pool = bank.filter(b=>b.tier===tier || tier==='kolay');
+        if(pool.length===0) pool = bank;
+        const avail = pool.filter(b=>!usedNonMathTexts.has(b.q));
+        const chosen = (avail.length?avail:pool)[randInt(0, (avail.length?avail:pool).length-1)];
+        if(chosen){
+          usedNonMathTexts.add(chosen.q);
+          questions.push({ subjectId, unitId, q:chosen.q, opts:chosen.opts, correct:chosen.correct, explain:chosen.explain, type:chosen.type, answers:chosen.answers });
+        }
+      }
+    }
+    if(questions.length===0) return null;
+    return { questions, idx:0, answers:new Array(questions.length).fill(null) };
+  }
+
+  function submitQuiz(){
+    const quiz = state.quiz;
+    const perSubject = {}; // subjectId -> {correct,total}
+    const missedUnits = new Set();
+    const perUnit = {}; // subjectId::unitId -> {correct,wrong}
+    quiz.questions.forEach((q,i)=>{
+      perSubject[q.subjectId] = perSubject[q.subjectId] || {correct:0, total:0};
+      perSubject[q.subjectId].total++;
+      const uKey = q.subjectId+'::'+q.unitId;
+      perUnit[uKey] = perUnit[uKey] || {correct:0, wrong:0};
+      if(answerIsCorrect(q, quiz.answers[i])){ perSubject[q.subjectId].correct++; perUnit[uKey].correct++; }
+      else { missedUnits.add(uKey); perUnit[uKey].wrong++; }
+    });
+    // Ünite bazlı ustalık puanı ve sonraki tekrar tarihi
+    Object.keys(perUnit).forEach(uKey=>{
+      const [subjectId, unitId] = uKey.split('::');
+      applyMastery(subjectId, unitId, perUnit[uKey].correct, perUnit[uKey].wrong);
+    });
+    const totalCorrect = quiz.questions.filter((q,i)=>answerIsCorrect(q, quiz.answers[i])).length;
+    const pct = Math.round(totalCorrect/quiz.questions.length*100);
+    const writtenCorrectNow = quiz.questions.filter((q,i)=>q.type==='yazili' && answerIsCorrect(q, quiz.answers[i])).length;
+    state.stats.writtenCorrect = (state.stats.writtenCorrect||0) + writtenCorrectNow;
+    // Sürekli seviye puanı: hedef doğruluk %75; üstünde kalırsa seviye yavaşça yükselir,
+    // altında kalırsa düşer. Soru sayısı az olan derslerde etki de küçük olur.
+    const levelUps = [];
+    Object.keys(perSubject).forEach(subjectId=>{
+      const {correct,total} = perSubject[subjectId];
+      const subjPct = correct/total*100;
+      const oldRating = ratingOf(subjectId);
+      const oldLevel = state.levels[subjectId] || levelFromRating(oldRating);
+      const weight = Math.min(1, total/8);          // tam etki için ~8 soru
+      const delta = (subjPct - RATING_TARGET_PCT) * 0.45 * weight;
+      const newRating = Math.max(0, Math.min(100, oldRating + delta));
+      writeRating(subjectId, newRating);
+      const newLevel = state.levels[subjectId];
+      if(newLevel > oldLevel) levelUps.push({ subjectId, level:newLevel });
+    });
+    // Yanlış cevaplanan ünitelerdeki "öğrenildi" konularını "tekrar gerekli" yap,
+    // böylece konu anlatımı ve soru tekrar sınava geri döner.
+    missedUnits.forEach(key=>{
+      const [subjectId, unitId] = key.split('::');
+      ALL_TOPICS.filter(t=>t.subjectId===subjectId && t.unitId===unitId).forEach(t=>{
+        if(statusOf(subjectId, t.topicId)==='ogrenildi') setStatus(subjectId, t.topicId, 'tekrar');
+      });
+    });
+    const missed = [];
+    const seenQ = new Set();
+    quiz.questions.forEach((q,i)=>{
+      if(!answerIsCorrect(q, quiz.answers[i]) && !seenQ.has(q.q)){
+        seenQ.add(q.q);
+        missed.push({ subjectId:q.subjectId, q:q.q, correctText:correctAnswerText(q), explain:q.explain });
+      }
+    });
+    state.stats.quizHistory = state.stats.quizHistory.slice(-19).concat([{ date:todayStr(), pct, count:quiz.questions.length }]);
+    const earned = totalCorrect*5 + (pct>=80?20:0);
+    addPoints(earned);
+    markActiveToday(0);
+    quiz.finished = true;
+    quiz.score = { totalCorrect, pct, earned };
+    quiz.missed = missed;
+    quiz.levelUps = levelUps;
+    render();
+  }
+
+  /* ---------- rendering ---------- */
+  const app = document.getElementById('app');
+
+  function iconColorVar(subjectId){ return 'var(--'+(SUBJECT_COLOR[subjectId]||'accent')+')'; }
+
+  function renderHeader(){
+    const hour = new Date().getHours();
+    const greet = hour<12? 'Günaydın' : hour<18? 'İyi günler' : 'İyi akşamlar';
+    return `
+      <div class="top">
+        <div class="mascot">🦉</div>
+        <div>
+          <h1>Bilgi Baykuşu</h1>
+          <div class="sub">${greet}! Bugün de birlikte öğrenelim 🌟</div>
+        </div>
+        <div class="stat-chips">
+          <span class="chip">🔥 ${state.stats.streak} gün</span>
+          <span class="chip">⭐ ${state.stats.points} puan</span>
+          <button class="chip" data-action="cycle-theme" title="Görünüm">${state.theme==='dark'?'🌙':state.theme==='light'?'☀️':'🌓'}</button>
+        </div>
+      </div>
+      <div class="tabbar">
+        <button class="tab ${state.view==='home'?'active':''}" data-action="nav" data-view="home">🏠 Bugün</button>
+        <button class="tab ${state.view==='subjects'?'active':''}" data-action="nav" data-view="subjects">📚 Derslerim</button>
+        <button class="tab ${state.view==='quiz'?'active':''}" data-action="nav" data-view="quiz">📝 Günlük Sınav</button>
+        <button class="tab ${state.view==='ask'?'active':''}" data-action="nav" data-view="ask">🤖 Öğretmene Sor</button>
+        <button class="tab ${state.view==='parent'?'active':''}" data-action="nav" data-view="parent">🔒 Veli Paneli</button>
+      </div>
+    `;
+  }
+
+  function ringHTML(pct, color){
+    return `<div class="ring" data-pct="${pct}" style="background:conic-gradient(${color} ${pct*3.6}deg, var(--track) 0)"></div>`;
+  }
+
+  const ASK_SUGGESTIONS = [
+    'Kesirleri bir türlü anlamadım, anlatır mısın?',
+    'Çarpma işlemini kolay yapmanın bir yolu var mı?',
+    'Noktalama işaretlerini örnekle açıklar mısın?',
+    'Deprem neden olur?',
+    'İngilizcede "there is" ve "there are" farkı ne?'
+  ];
+
+  function renderAsk(){
+    if(!aiReady()){
+      return `<div class="card empty">
+          <div class="big">🤖</div>
+          <b>Öğretmene Sor şu an kullanılamıyor</b>
+          <div class="muted">Bu özellik uygulamayı Claude üzerinden açtığında çalışır ve ilk soruda izin ister. Sayfayı yenilemeyi deneyebilirsin.</div>
+        </div>`;
+    }
+    const a = state.ai;
+    let answerHTML = '';
+    if(a.loading && !a.answer){
+      answerHTML = `<div class="explain-box">🦉 Düşünüyorum...</div>`;
+    } else if(a.answer){
+      answerHTML = `
+        <div class="explain-box">
+          <div id="ai-answer" style="white-space:pre-wrap">${esc(a.answer)}</div>
+          ${ttsAvailable?`<div style="margin-top:10px"><button class="btn secondary" data-action="speak-ai" style="padding:5px 10px;font-size:11px">🔊 Sesli Dinle</button></div>`:''}
+        </div>`;
+    }
+    const errorHTML = a.error ? `<div class="explain-box" style="border-left-color:var(--red)">${esc(a.error)}</div>` : '';
+    return `
+      <div class="card">
+        <h2>🤖 Öğretmene Sor</h2>
+        <div class="muted" style="margin-bottom:10px">Anlamadığın bir konuyu ya da soruyu yaz, Bilgi Baykuşu sana anlatsın.</div>
+        <textarea class="journal-box" id="ask-input" placeholder="Örnek: Kesirlerde pay ve payda ne demek?">${esc(a.question||'')}</textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn" data-action="ask-teacher" ${a.loading?'disabled':''}>${a.loading?'🦉 Düşünüyorum...':'Sor'}</button>
+          ${sttAvailable?`<button class="btn secondary" data-action="ask-voice">${state.micListening?'🔴 Dinliyorum...':'🎤 Sesle Sor'}</button>`:''}
+        </div>
+        ${answerHTML}
+        ${errorHTML}
+      </div>
+      <div class="card">
+        <h2>Aklına gelmiyorsa</h2>
+        <div class="muted" style="margin-bottom:10px">Bu sorulardan birine dokunabilirsin.</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${ASK_SUGGESTIONS.map((s,i)=>`<button class="opt" data-action="ask-suggestion" data-i="${i}">${esc(s)}</button>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  function renderRewardsCard(){
+    const rewards = sortedRewards();
+    if(rewards.length===0){
+      return `<div class="card"><h2>Ödül Yolu</h2><div class="muted">Veli Paneli'nden ödül eklemeyi unutmayın 🎁</div></div>`;
+    }
+    const maxCost = rewards[rewards.length-1].cost;
+    const scale = Math.max(maxCost, state.stats.points+20);
+    const fillPct = Math.min(100, Math.round(state.stats.points/scale*100));
+    const marks = rewards.map(r=>{
+      const pos = Math.min(98, Math.max(2, Math.round(r.cost/scale*100)));
+      return `<div class="reward-mark" style="left:${pos}%">${r.emoji}</div>`;
+    }).join('');
+    const next = rewards.find(r=>r.cost>state.stats.points);
+    const list = rewards.map(r=>{
+      const unlocked = state.stats.points>=r.cost;
+      return `<div class="reward-item ${unlocked?'':'locked'}">
+          <span class="em">${r.emoji}</span>
+          <div class="info"><div class="nm">${esc(r.name)}</div><div class="cost">${r.cost} puan${unlocked?' · kullanmaya hazır!':''}</div></div>
+          ${unlocked ? `<button class="btn" data-action="redeem-reward" data-id="${r.id}">Kullan 🎉</button>` : ''}
+        </div>`;
+    }).join('');
+    return `
+      <div class="card">
+        <h2>Ödül Yolu</h2>
+        <div class="reward-marks">${marks}</div>
+        <div class="reward-track"><i style="width:${fillPct}%"></i></div>
+        <div class="muted" style="margin-bottom:10px">${next? `${next.emoji} ${esc(next.name)}'a ${next.cost-state.stats.points} puan kaldı!` : 'Tüm ödülleri kazanacak puana ulaştın! 🏆'}</div>
+        <div class="reward-list">${list}</div>
+      </div>`;
+  }
+
+  function renderWeekProgramCard(){
+    const todayIdx = todayDayIndex();
+    const chips = WEEKLY_PLAN.map((day,i)=>{
+      const isToday = i===todayIdx;
+      const icons = day.review ? '🌿' : day.subjects.map(id=>SUBJECT_BY_ID[id].icon).join(' ');
+      return `<div style="flex:1;min-width:74px;text-align:center;padding:10px 4px;border-radius:12px;background:${isToday?'var(--accent)':'var(--surface-2)'};color:${isToday?'#fff':'var(--ink)'}">
+          <div style="font-size:10.5px;font-weight:800;opacity:${isToday?1:0.75}">${DAY_NAMES[i].slice(0,3)}</div>
+          <div style="font-size:17px;margin-top:4px">${icons}</div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="card">
+        <h2>Haftalık Program</h2>
+        <div class="muted" style="margin-bottom:10px">Her gün farklı derslere odaklanıyoruz, Pazar günü ise serbest tekrar günü 🌿</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${chips}</div>
+      </div>`;
+  }
+
+  function renderBadgeDetail(b){
+    return `
+      <div class="card" style="text-align:center">
+        <button class="btn secondary" data-action="close-badge" style="margin-bottom:14px">← Kapat</button>
+        <div style="font-size:54px">${b.emoji}</div>
+        <h2 style="margin-top:8px">${esc(b.name)}</h2>
+        <div class="muted" style="margin:8px auto 16px;max-width:340px">${esc(b.desc)}</div>
+        ${b.earned
+          ? `<div class="chip" style="display:inline-flex;background:var(--green);color:#fff;border-color:transparent">✅ Kazanıldı!</div>`
+          : `
+            <div class="bar" style="max-width:280px;margin:0 auto 8px"><i style="width:${b.pct}%;background:var(--accent)"></i></div>
+            <div class="muted">${b.value}${b.unit||''} / ${b.target}${b.unit||''}</div>
+          `}
+      </div>`;
+  }
+
+  function renderLevelCard(){
+    const rows = CURRICULUM.map(s=>{
+      const r = ratingOf(s.id);
+      const lvl = state.levels[s.id] || levelFromRating(r);
+      return `<div class="topic-row" style="flex-direction:column;align-items:stretch;gap:6px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="tname">${s.icon} ${esc(s.name)}</span>
+            <span class="status-pill">${tierLabel(lvl)}</span>
+          </div>
+          <div class="bar"><i style="width:${Math.round(r)}%; background:${iconColorVar(s.id)}"></i></div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="card">
+        <h2>📈 Seviyem</h2>
+        <div class="muted" style="margin-bottom:10px">Her sınavdan sonra seviyen kendiliğinden ayarlanır. Çubuk dolunca bir üst seviyeye geçersin — en üstte 🚀 İleri Seviye var (4. sınıfın üstü!).</div>
+        <div class="topics">${rows}</div>
+      </div>`;
+  }
+
+  function renderDueCard(){
+    const due = dueUnits();
+    if(!due.length) return '';
+    const top = due.slice(0,4);
+    return `
+      <div class="card" style="border-left:4px solid var(--blue)">
+        <h2>🔁 Tekrar Zamanı</h2>
+        <div class="muted" style="margin-bottom:10px">Bu üniteleri bir süre önce çalıştın; şimdi tekrar etmenin tam zamanı (böylece kalıcı olarak öğrenirsin).</div>
+        <div class="topics">${top.map(x=>`
+            <div class="topic-row">
+              <span class="tname">${x.icon} ${esc(x.unitName)}</span>
+              <span class="status-pill">ustalık %${x.score}</span>
+            </div>`).join('')}</div>
+        ${due.length>top.length?`<div class="muted" style="margin-top:8px">ve ${due.length-top.length} ünite daha</div>`:''}
+        <button class="btn block" style="margin-top:12px" data-action="start-quiz" data-subject="review">🔁 Tekrar Sınavını Başlat</button>
+      </div>`;
+  }
+
+  function renderJournalCard(){
+    const today = todayStr();
+    const saved = state.journal[today] || '';
+    return `
+      <div class="card">
+        <h2>📔 Bugün Ne Öğrendim?</h2>
+        <div class="muted" style="margin-bottom:10px">Bugün öğrendiklerini kendi cümlelerinle kısaca yaz.</div>
+        <textarea class="journal-box" id="journal-textarea" placeholder="Bugün ${SUBJECT_BY_ID['turkce'].name} dersinde...">${esc(saved)}</textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn secondary" data-action="save-journal">💾 Kaydet</button>
+        </div>
+      </div>`;
+  }
+
+  function renderHome(){
+    const todayIdx = todayDayIndex();
+    const plan = WEEKLY_PLAN[todayIdx];
+    const badges = earnedBadges();
+    let timerHTML = '';
+    if(state.timer.running){
+      const m = String(Math.floor(state.timer.seconds/60)).padStart(2,'0');
+      const s = String(state.timer.seconds%60).padStart(2,'0');
+      timerHTML = `
+        <div class="timer-box">
+          <div class="timer-num">${m}:${s}</div>
+          <div class="muted">Çalışma süren akıyor, hedefin 25-30 dakika 🎯</div>
+          <button class="btn secondary" style="margin-top:10px" data-action="stop-timer">Bitir</button>
+        </div>`;
+    } else {
+      timerHTML = `
+        <div class="timer-box">
+          <div class="muted" style="margin-bottom:10px">Bugün için hedef: 25-30 dakika çalışmak 🎯</div>
+          <button class="btn" data-action="start-timer">▶️ Çalışmaya Başla</button>
+        </div>`;
+    }
+
+    // Serbest seçim: çocuk bugün hangi dersi çalışmak istiyorsa onu seçer.
+    // Önerilen (bugünün programındaki) dersler öne çıkar, ama istediği dersi de seçebilir.
+    const suggested = plan.subjects;
+    const chosen = state.chosenSubject && SUBJECT_BY_ID[state.chosenSubject] ? state.chosenSubject : (suggested[0] || CURRICULUM[0].id);
+    const pickerHTML = `
+      <div class="card">
+        <h2>Bugün Ne Çalışmak İstersin?</h2>
+        <div class="muted" style="margin-bottom:10px">${suggested.length? 'Bugün için önerilen dersler: '+suggested.map(id=>SUBJECT_BY_ID[id].icon+' '+SUBJECT_BY_ID[id].name).join(', ')+'. İstersen başka bir dersi de seçebilirsin.' : 'Bugün serbest gün, istediğin dersi seçip çalışabilirsin.'}</div>
+        <div class="grid-subjects">
+          ${CURRICULUM.map(s=>`<button class="subj-tile" data-action="pick-subject" data-subject="${s.id}" style="${chosen===s.id?'border-color:var(--accent);border-width:2px':''}">
+              <span class="ic">${s.icon}</span>
+              <span class="nm">${esc(s.name)}${suggested.includes(s.id)?' ⭐':''}</span>
+            </button>`).join('')}
+        </div>
+      </div>`;
+
+    const t = nextTopicForSubject(chosen);
+    const subj = SUBJECT_BY_ID[chosen];
+    const taskHTML = !t
+      ? `<div class="card empty"><div class="big">🎉</div><b>${esc(subj.name)} dersinde tüm konular tamam!</b><div class="muted">Başka bir ders seçip devam edebilirsin.</div></div>`
+      : `
+        <div class="card task-card">
+          <div style="font-size:34px">${subj.icon}</div>
+          <div class="task-info">
+            <div class="lbl">Bugünkü Görev · ${esc(subj.name)}${statusOf(chosen,t.topicId)==='tekrar'?' · Tekrar':''}</div>
+            <div class="name">${esc(t.topicName)}</div>
+            <div class="muted" style="margin-top:2px">${esc(t.unitName)}</div>
+          </div>
+          <button class="btn" data-action="complete-topic" data-subject="${chosen}" data-topic="${t.topicId}">✅ Öğrendim!</button>
+        </div>`;
+
+    const missed = missedThisWeek().filter(id=>id!==chosen);
+    const reminderHTML = missed.length ? `
+      <div class="card" style="border-left:4px solid var(--red)">
+        <h2>⏰ Hatırlatıcı</h2>
+        <div class="muted" style="margin-bottom:10px">Bu hafta henüz hiç çalışmadığın dersler var:</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${missed.map(id=>`<button class="btn secondary" data-action="pick-subject" data-subject="${id}">${SUBJECT_BY_ID[id].icon} ${esc(SUBJECT_BY_ID[id].name)}</button>`).join('')}
+        </div>
+      </div>` : '';
+
+    const subjectTiles = CURRICULUM.map(s=>{
+      const p = subjectProgress(s.id);
+      return `<button class="subj-tile" data-action="open-subject" data-subject="${s.id}">
+          <span class="ic">${s.icon}</span>
+          <span class="nm">${esc(s.name)}</span>
+          <div class="bar"><i style="width:${p.pct}%; background:${iconColorVar(s.id)}"></i></div>
+          <span class="pct">${p.learned}/${p.total} konu</span>
+        </button>`;
+    }).join('');
+
+    const badgeHTML = badges.map(b=>`
+      <button class="badge ${b.earned?'':'locked'}" data-action="open-badge" data-id="${b.id}">
+        <div class="emoji">${b.emoji}</div>
+        <div class="nm">${esc(b.name)}</div>
+      </button>`).join('');
+    const openBadgeDef = state.openBadge ? badges.find(b=>b.id===state.openBadge) : null;
+    const badgeDetailHTML = openBadgeDef ? renderBadgeDetail(openBadgeDef) : '';
+
+    return `
+      <div class="quote-strip"><span class="qmark">💬</span><span>${esc(todaysQuote())}</span></div>
+      ${renderWeekProgramCard()}
+      ${reminderHTML}
+      ${renderDueCard()}
+      ${pickerHTML}
+      ${taskHTML}
+      <div class="card">${timerHTML}</div>
+      ${renderLevelCard()}
+      ${renderJournalCard()}
+      ${renderRewardsCard()}
+      <div class="card">
+        <h2>Derslerim</h2>
+        <div class="grid-subjects">${subjectTiles}</div>
+      </div>
+      <div class="card">
+        <h2>Rozetlerim</h2>
+        <div class="muted" style="margin-bottom:10px">Detayları görmek için bir rozete dokun.</div>
+        <div class="badges-row">${badgeHTML}</div>
+      </div>
+      ${badgeDetailHTML}
+    `;
+  }
+
+  const STATUS_META = {
+    yok:{ label:'Başlanmadı', color:'var(--ink-soft)' },
+    ogreniliyor:{ label:'Öğreniliyor', color:'var(--yellow)' },
+    ogrenildi:{ label:'Öğrenildi', color:'var(--green)' },
+    tekrar:{ label:'Tekrar Gerekli', color:'var(--red)' }
+  };
+  const STATUS_ORDER = ['yok','ogreniliyor','ogrenildi','tekrar'];
+
+  function renderSubjects(){
+    if(state.openSubject){
+      const s = SUBJECT_BY_ID[state.openSubject];
+      const p = subjectProgress(s.id);
+      const unitsHTML = s.units.map(u=>{
+        const rows = u.topics.map(t=>{
+          const st = statusOf(s.id, t.id);
+          const meta = STATUS_META[st];
+          const key = s.id+'__'+t.id;
+          const isOpen = state.openLesson===key;
+          const lesson = TOPIC_LESSONS[t.id];
+          const diagram = TOPIC_DIAGRAMS[t.id];
+          return `<div class="topic-row" style="flex-direction:column;align-items:stretch;gap:6px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span class="status-dot" style="background:${meta.color}"></span>
+                <span class="tname" style="flex:1">${esc(t.name)}</span>
+                <span class="status-pill">${meta.label}</span>
+                ${lesson ? `<button class="btn secondary" data-action="toggle-lesson" data-key="${key}" style="padding:5px 10px;font-size:11px;white-space:nowrap">📖 ${isOpen?'Kapat':'Anlat'}</button>` : ''}
+              </div>
+              ${isOpen && lesson ? `<div class="explain-box">${diagram||''}💡 ${esc(lesson)}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">${ttsAvailable?`<button class="btn secondary" data-action="speak-lesson" data-key="${t.id}" style="padding:5px 10px;font-size:11px">🔊 Sesli Dinle</button>`:''}${aiReady()?`<button class="btn secondary" data-action="explain-again" data-topic="${esc(t.name)}" style="padding:5px 10px;font-size:11px">🤖 Başka Türlü Anlat</button>`:''}</div></div>` : ''}
+            </div>`;
+        }).join('');
+        return `<div class="unit-block"><h3>${esc(u.name)}</h3><div class="topics">${rows}</div></div>`;
+      }).join('');
+      return `
+        <div class="card">
+          <button class="btn secondary" data-action="close-subject" style="margin-bottom:14px">← Derslere Dön</button>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+            <span style="font-size:30px">${s.icon}</span>
+            <h2 style="margin:0">${esc(s.name)}</h2>
+          </div>
+          <div class="bar" style="margin-bottom:6px"><i style="width:${p.pct}%; background:${iconColorVar(s.id)}"></i></div>
+          <div class="muted" style="margin-bottom:16px">${p.learned}/${p.total} konu öğrenildi (%${p.pct}). Konu durumlarını Veli Paneli'nden güncelleyebilirsiniz.</div>
+          <div class="unit-block">
+            <h3>Sınav Zorluğu</h3>
+            <div class="muted" style="margin-bottom:8px">Sınav sonuçlarına göre otomatik ayarlanır, ama istersen kendin de değiştirebilirsin.</div>
+            <div class="toggle-4">
+              ${[1,2,3,4].map(lvl=>{
+                const cur = state.levels[s.id] || levelFromRating(ratingOf(s.id));
+                return `<button class="${cur===lvl?'on':''}" style="${cur===lvl?('background:'+iconColorVar(s.id)+';'):''}" data-action="set-level" data-subject="${s.id}" data-level="${lvl}">${tierLabel(lvl)}</button>`;
+              }).join('')}
+            </div>
+          </div>
+          ${unitsHTML}
+        </div>`;
+    }
+    const tiles = CURRICULUM.map(s=>{
+      const p = subjectProgress(s.id);
+      return `<button class="subj-tile" data-action="open-subject" data-subject="${s.id}">
+          <span class="ic">${s.icon}</span>
+          <span class="nm">${esc(s.name)}</span>
+          <div class="bar"><i style="width:${p.pct}%; background:${iconColorVar(s.id)}"></i></div>
+          <span class="pct">${p.learned}/${p.total} konu · %${p.pct}</span>
+        </button>`;
+    }).join('');
+    return `<div class="card"><h2>Derslerim</h2><div class="grid-subjects">${tiles}</div></div>`;
+  }
+
+  function renderQuiz(){
+    if(state.quiz && !state.quiz.finished){
+      const q = state.quiz;
+      const cur = q.questions[q.idx];
+      const progDots = q.questions.map((_,i)=>`<i class="${i<=q.idx?'done':''}"></i>`).join('');
+      const selected = q.answers[q.idx];
+      const answered = selected!=null;
+      const isCorrect = answered && answerIsCorrect(cur, selected);
+      let bodyHTML;
+      if(cur.type==='yazili'){
+        bodyHTML = `
+          <input class="text-answer" type="text" placeholder="Cevabını buraya yaz..." value="${answered?esc(selected):''}" ${answered?'disabled':''} autocomplete="off">
+          ${!answered ? `
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn" data-action="submit-text-answer">Cevapla</button>
+              ${sttAvailable ? `<button class="btn secondary" data-action="voice-input" id="mic-btn">${state.micListening?'🔴 Dinliyorum...':'🎤 Sesle Söyle'}</button>` : ''}
+            </div>` : ''}`;
+      } else {
+        bodyHTML = `<div class="opts">${cur.opts.map((o,i)=>{
+          let cls = '';
+          if(answered){ if(i===cur.correct) cls='correct'; else if(i===selected) cls='wrong'; }
+          return `<button class="opt ${cls}" data-action="answer" data-i="${i}" ${answered?'disabled':''}>${esc(o)}</button>`;
+        }).join('')}</div>`;
+      }
+      const subj = SUBJECT_BY_ID[cur.subjectId];
+      const speakBtn = ttsAvailable ? `<button class="btn secondary" data-action="speak-quiz-q" style="padding:5px 10px;font-size:11px">🔊 Dinle</button>` : '';
+      const explainHTML = answered
+        ? `<div class="explain-box">${isCorrect?'✅ Doğru!':'❌ Doğru cevap: <b>'+esc(correctAnswerText(cur))+'</b>'} ${cur.explain?('<br>💡 '+esc(cur.explain)):''} ${ttsAvailable&&cur.explain?`<div style="margin-top:8px"><button class="btn secondary" data-action="speak-explain" style="padding:5px 10px;font-size:11px">🔊 Açıklamayı Dinle</button></div>`:''}</div>`
+        : '';
+      return `
+        <div class="card">
+          <div class="qprog">${progDots}</div>
+          <div class="muted" style="margin-bottom:6px">${subj.icon} ${esc(subj.name)} · Soru ${q.idx+1}/${q.questions.length}${cur.type==='yazili'?' · ✍️ Yazılı':''}</div>
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px">
+            <div class="q-text" style="margin-bottom:0;flex:1">${esc(cur.q)}</div>
+            ${speakBtn}
+          </div>
+          ${bodyHTML}
+          ${explainHTML}
+          <div style="margin-top:16px;display:flex;justify-content:flex-end">
+            <button class="btn" data-action="next-question" ${!answered?'disabled':''}>${q.idx===q.questions.length-1?'Bitir':'Sonraki'} →</button>
+          </div>
+        </div>`;
+    }
+    if(state.quiz && state.quiz.finished){
+      const {totalCorrect, pct, earned} = state.quiz.score;
+      const msg = pct>=80?'Harikasın! 🎉': pct>=50?'Güzel gidiyorsun! 💪':'Birlikte tekrar edelim! 📚';
+      const missed = state.quiz.missed || [];
+      const reviewHTML = missed.length ? `
+        <div class="card">
+          <h2>📖 Tekrar Edelim</h2>
+          <div class="muted" style="margin-bottom:10px">Karıştırdığın sorular ilgili konular "Tekrar Gerekli" olarak işaretlendi; bir dahaki sınavda tekrar karşına çıkacak.</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            ${missed.map(m=>`
+              <div class="topic-row" style="flex-direction:column;align-items:stretch;gap:4px">
+                <span class="tname">${SUBJECT_BY_ID[m.subjectId].icon} ${esc(m.q)}</span>
+                <div class="explain-box" style="margin-top:0">✅ Doğru cevap: <b>${esc(m.correctText)}</b>${m.explain?('<br>💡 '+esc(m.explain)):''}</div>
+              </div>`).join('')}
+          </div>
+        </div>` : '';
+      const levelUpHTML = (state.quiz.levelUps||[]).length ? `
+        <div class="card" style="text-align:center;border-left:4px solid var(--green)">
+          ${renderConfetti(24)}
+          <div style="font-size:40px">🚀</div>
+          <h2 style="margin-top:6px">Seviye Atladın!</h2>
+          <div class="muted" style="margin-top:6px">${state.quiz.levelUps.map(l=>`${SUBJECT_BY_ID[l.subjectId].icon} ${esc(SUBJECT_BY_ID[l.subjectId].name)} → ${tierLabel(l.level)}`).join('<br>')}</div>
+          <div class="muted" style="margin-top:8px">Bundan sonraki sorular biraz daha zor gelecek, çünkü artık hazırsın!</div>
+        </div>` : '';
+      return `
+        ${levelUpHTML}
+        <div class="card" style="text-align:center">
+          ${pct>=60 ? renderConfetti(pct>=80?28:16) : ''}
+          <div style="font-size:52px">${pct>=80?'🏆':pct>=50?'🙂':'🌱'}</div>
+          <div class="result-score">${pct}%</div>
+          <div class="result-sub">${totalCorrect}/${state.quiz.questions.length} doğru · +${earned} puan</div>
+          <div class="muted" style="margin-top:8px">${msg}</div>
+          <button class="btn" style="margin-top:18px" data-action="quiz-done">Tamam</button>
+        </div>
+        ${reviewHTML}`;
+    }
+    if(state.quizLoading){
+      return `<div class="card empty">
+          <div class="big">🦉</div>
+          <b>Sorular hazırlanıyor...</b>
+          <div class="muted">Bilgi Baykuşu sana özel yeni sorular yazıyor, birkaç saniye sürebilir.</div>
+        </div>`;
+    }
+    const unitsMap = recentlyStudiedUnits();
+    const fallbackMap = unitsMap.size? unitsMap : anyStudiedUnits();
+    const mixedReady = fallbackMap.size>0;
+    return `
+      <div class="card empty">
+        <div class="big">🦉</div>
+        <b>Günlük Sınav Zamanı!</b>
+        <div class="muted">İstediğin dersten ${QUIZ_QUESTION_COUNT} soruluk bir sınav yapabilirsin, her gün istediğin kadar.</div>
+      </div>
+      ${aiReady()?`
+      <div class="card">
+        <h2>🤖 Yapay Zekâ Soruları</h2>
+        <div class="muted" style="margin-bottom:10px">Açık olduğunda sınavdaki soruların bir kısmı her seferinde yeniden yazılır, yani hiç aynı sınavı iki kez çözmezsin.</div>
+        <div class="toggle-4">
+          <button class="${state.useAI?'on':''}" style="${state.useAI?'background:var(--green);':''}" data-action="toggle-ai" data-on="1">✅ Açık</button>
+          <button class="${!state.useAI?'on':''}" style="${!state.useAI?'background:var(--ink-soft);':''}" data-action="toggle-ai" data-on="0">Kapalı</button>
+        </div>
+      </div>`:''}
+      <div class="card">
+        <h2>Karışık Sınav</h2>
+        <div class="muted" style="margin-bottom:10px">${mixedReady? 'Bu hafta çalıştığın derslerden karışık sorular gelir.' : 'Karışık sınav için önce en az bir konu öğrenmelisin.'}</div>
+        <button class="btn block" data-action="start-quiz" data-subject="all" ${mixedReady?'':'disabled'}>🎲 Karışık Sınava Başla</button>
+      </div>
+      <div class="card">
+        <h2>Ders Sınavı</h2>
+        <div class="muted" style="margin-bottom:10px">İstediğin dersten sınav yapabilirsin, o dersi daha önce çalışmış olman gerekmez.</div>
+        <div class="grid-subjects">
+          ${CURRICULUM.map(s=>`<button class="subj-tile" data-action="start-quiz" data-subject="${s.id}">
+              <span class="ic">${s.icon}</span>
+              <span class="nm">${esc(s.name)}</span>
+            </button>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  function renderParentLock(){
+    const dots = Array.from({length:4}).map((_,i)=>`<i class="${i<state.pinInput.length?'filled':''}"></i>`).join('');
+    return `
+      <div class="card" style="text-align:center">
+        <div style="font-size:36px">🔒</div>
+        <h2 style="margin-top:6px">Veli Paneli</h2>
+        <div class="muted">Devam etmek için PIN gir (varsayılan: 0000)</div>
+        <div class="pindots">${dots}</div>
+        <div class="pinpad">
+          ${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-action="pin-key" data-k="${n}">${n}</button>`).join('')}
+          <button data-action="pin-clear">Temizle</button>
+          <button data-action="pin-key" data-k="0">0</button>
+          <button data-action="pin-back">⌫</button>
+        </div>
+      </div>`;
+  }
+
+  function renderRewardsAdmin(){
+    const rewards = sortedRewards();
+    const rows = rewards.map(r=>`
+        <div class="reward-item">
+          <span class="em">${r.emoji}</span>
+          <div class="info"><div class="nm">${esc(r.name)}</div><div class="cost">${r.cost} puan</div></div>
+          <button class="btn secondary" data-action="delete-reward" data-id="${r.id}">Sil</button>
+        </div>`).join('') || `<div class="muted">Henüz ödül eklenmedi.</div>`;
+    const log = (state.stats.redemptions||[]).slice().reverse();
+    const logHTML = log.length
+      ? log.map(r=>`<div>${r.date} · ${r.emoji||'🎁'} ${esc(r.name)} · ${r.cost} puan</div>`).join('')
+      : `<div class="muted">Henüz kullanılan ödül yok.</div>`;
+    return `
+      <div class="card">
+        <h2>Ödüller</h2>
+        <div class="muted" style="margin-bottom:10px">Puan biriktirince kullanabileceği ödülleri sen belirlersin. Örnek: 15 dakika tablet, hafta sonu film gecesi.</div>
+        <div class="reward-list">${rows}</div>
+        <form class="reward-form" data-action-submit="add-reward">
+          <input name="rname" placeholder="Ödül adı (örn. Film Gecesi)" required>
+          <input name="remoji" placeholder="🎁" value="🎁">
+          <input name="rcost" type="number" min="1" placeholder="Puan" required>
+          <button class="btn" type="submit">Ekle</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Kullanılan Ödüller</h2>
+        <div class="redeem-log">${logHTML}</div>
+        ${log.length ? `<button class="btn secondary" style="margin-top:10px" data-action="clear-redemptions">Geçmişi Temizle</button>` : ''}
+      </div>`;
+  }
+
+  function renderParentPanel(){
+    const total = ALL_TOPICS.length;
+    const learned = learnedCountTotal();
+    const weekMap = recentlyStudiedUnits();
+    const levelRows = CURRICULUM.map(s=>{
+      const r = ratingOf(s.id);
+      const lvl = state.levels[s.id] || levelFromRating(r);
+      return `<div class="topic-row"><span class="tname">${s.icon} ${esc(s.name)}</span><span class="status-pill">${tierLabel(lvl)} · ${Math.round(r)}/100</span></div>`;
+    }).join('');
+    const masteryList = allUnitsByMastery().filter(x=>x.seen>0).sort((a,b)=>a.score-b.score);
+    const masteryHTML = masteryList.length ? masteryList.map(x=>`
+        <div class="topic-row" style="flex-direction:column;align-items:stretch;gap:5px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="tname">${x.icon} ${esc(x.unitName)}</span>
+            <span class="status-pill">%${x.score}</span>
+          </div>
+          <div class="bar"><i style="width:${x.score}%; background:${x.score>=70?'var(--green)':x.score>=40?'var(--yellow)':'var(--red)'}"></i></div>
+          <div class="muted" style="font-size:11.5px">${x.seen} soru görüldü${x.dueAt?` · sonraki tekrar: ${x.dueAt}`:''}</div>
+        </div>`).join('') : `<div class="muted">Henüz sınav çözülmedi, ustalık verisi birikmeye başlayınca burada görünecek.</div>`;
+    const subjectEditors = CURRICULUM.map(s=>{
+      const unitsHTML = s.units.map(u=>{
+        const rows = u.topics.map(t=>{
+          const st = statusOf(s.id,t.id);
+          const btns = STATUS_ORDER.map(key=>`<button class="${st===key?'on':''}" style="${st===key?('background:'+STATUS_META[key].color+';'):''}" data-action="set-status" data-subject="${s.id}" data-topic="${t.id}" data-status="${key}">${STATUS_META[key].label}</button>`).join('');
+          return `<div class="topic-row" style="flex-direction:column;align-items:stretch;gap:6px">
+              <span class="tname">${esc(t.name)}</span>
+              <div class="toggle-4">${btns}</div>
+            </div>`;
+        }).join('');
+        return `<div class="unit-block"><h3>${esc(u.name)}</h3><div class="topics">${rows}</div></div>`;
+      }).join('');
+      return `<details style="margin-bottom:10px">
+          <summary style="cursor:pointer;font-weight:800;padding:8px 0">${s.icon} ${esc(s.name)}</summary>
+          ${unitsHTML}
+        </details>`;
+    }).join('');
+    const journalEntries = Object.entries(state.journal).filter(([,t])=>t&&t.trim()).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,5);
+    const journalHTML = journalEntries.length ? journalEntries.map(([date,text])=>`
+        <div class="topic-row" style="flex-direction:column;align-items:stretch;gap:4px">
+          <span class="tname">${date}</span>
+          <div class="muted">${esc(text)}</div>
+        </div>`).join('') : `<div class="muted">Henüz günlük notu yazılmadı.</div>`;
+    return `
+      ${renderWeeklyReportCard()}
+      <div class="card">
+        <h2>📔 Günlük Notları</h2>
+        <div class="muted" style="margin-bottom:10px">Kızınızın "Bugün Ne Öğrendim?" bölümüne yazdığı son notlar.</div>
+        <div class="topics">${journalHTML}</div>
+      </div>
+      <div class="card">
+        <h2>Genel Durum</h2>
+        <div class="muted">${learned}/${total} konu öğrenildi (toplam) · Bu hafta ${weekMap.size} ünite çalışıldı</div>
+      </div>
+      <div class="card">
+        <h2>Ders Seviyeleri (Sınav Zorluğu)</h2>
+        <div class="topics">${levelRows}</div>
+        <div class="muted" style="margin-top:8px">Her sınavdan sonra otomatik güncellenir (hedef doğruluk %${RATING_TARGET_PCT}). 90 puanı aşan derste 🚀 İleri Seviye açılır: sorular 4. sınıf üstü, çok adımlı gelir.</div>
+      </div>
+      <div class="card">
+        <h2>🎯 Ünite Ustalığı</h2>
+        <div class="muted" style="margin-bottom:10px">En zayıf üniteler üstte. Sınavlar bu listeye göre soru seçer ve "sonraki tekrar" tarihi geldiğinde o ünite kızınızın karşısına yeniden çıkar.</div>
+        <div class="topics">${masteryHTML}</div>
+      </div>
+      <div class="card">
+        <h2>Konu Durumlarını Düzenle</h2>
+        ${subjectEditors}
+      </div>
+      ${renderRewardsAdmin()}
+      <div class="card">
+        <h2>Ayarlar</h2>
+        <button class="btn secondary" data-action="change-pin">PIN Değiştir</button>
+        <button class="btn secondary" style="margin-left:8px" data-action="reset-progress">Tüm İlerlemeyi Sıfırla</button>
+        <button class="btn secondary" style="margin-left:8px" data-action="lock-parent">Kilitle</button>
+      </div>
+    `;
+  }
+
+  function render(){
+    let body = '';
+    if(state.view==='home') body = renderHome();
+    else if(state.view==='subjects') body = renderSubjects();
+    else if(state.view==='quiz') body = renderQuiz();
+    else if(state.view==='ask') body = renderAsk();
+    else if(state.view==='parent') body = state.parentUnlocked ? renderParentPanel() : renderParentLock();
+    app.innerHTML = renderHeader() + body;
+  }
+
+  /* ---------- events ---------- */
+  app.addEventListener('click', function(e){
+    const el = e.target.closest('[data-action]');
+    if(!el) return;
+    const action = el.dataset.action;
+    if(action==='nav'){ state.view = el.dataset.view; state.openSubject=null; render(); }
+    else if(action==='open-subject'){ state.openSubject = el.dataset.subject; render(); }
+    else if(action==='pick-subject'){ state.chosenSubject = el.dataset.subject; render(); }
+    else if(action==='cycle-theme'){ cycleTheme(); }
+    else if(action==='open-badge'){ state.openBadge = el.dataset.id; render(); }
+    else if(action==='close-badge'){ state.openBadge = null; render(); }
+    else if(action==='close-subject'){ state.openSubject = null; state.openLesson = null; render(); }
+    else if(action==='toggle-lesson'){ state.openLesson = state.openLesson===el.dataset.key ? null : el.dataset.key; render(); }
+    else if(action==='complete-topic'){
+      setStatus(el.dataset.subject, el.dataset.topic, 'ogrenildi');
+      addPoints(10);
+      markActiveToday(0);
+    }
+    else if(action==='start-timer'){
+      state.timer.running = true; state.timer.seconds = 0;
+      state.timer.handle = setInterval(()=>{ state.timer.seconds++; render(); }, 1000);
+      render();
+    }
+    else if(action==='stop-timer'){
+      clearInterval(state.timer.handle);
+      const minutes = Math.max(1, Math.round(state.timer.seconds/60));
+      state.timer.running = false;
+      markActiveToday(minutes);
+      addPoints(minutes>=20?15:5);
+      render();
+    }
+    else if(action==='start-quiz'){
+      if(el.disabled) return;
+      startQuiz(el.dataset.subject);
+    }
+    else if(action==='toggle-ai'){ state.useAI = el.dataset.on==='1'; render(); }
+    else if(action==='ask-teacher'){
+      const ta = app.querySelector('#ask-input');
+      askTeacher(ta ? ta.value : '');
+    }
+    else if(action==='ask-suggestion'){ askTeacher(ASK_SUGGESTIONS[Number(el.dataset.i)]); }
+    else if(action==='ask-voice'){
+      if(!sttAvailable || state.micListening) return;
+      state.micListening = true;
+      render();
+      startVoiceInput(
+        (text)=>{ const ta = app.querySelector('#ask-input'); if(ta) ta.value = text; },
+        ()=>{ state.micListening = false; render(); }
+      );
+    }
+    else if(action==='speak-ai'){ speak(state.ai.answer || ''); }
+    else if(action==='explain-again'){
+      const name = el.dataset.topic || '';
+      askTeacher(`"${name}" konusunu bana başka bir örnekle, daha basit anlatır mısın?`);
+    }
+    else if(action==='answer'){
+      if(state.quiz) state.quiz.answers[state.quiz.idx] = Number(el.dataset.i);
+      render();
+    }
+    else if(action==='submit-text-answer'){
+      const input = app.querySelector('.text-answer');
+      const val = input ? input.value.trim() : '';
+      if(!val || !state.quiz) return;
+      state.quiz.answers[state.quiz.idx] = val;
+      render();
+    }
+    else if(action==='voice-input'){
+      if(!sttAvailable || state.micListening) return;
+      state.micListening = true;
+      render();
+      startVoiceInput(
+        (text)=>{ const input = app.querySelector('.text-answer'); if(input) input.value = text; },
+        ()=>{ state.micListening = false; render(); }
+      );
+    }
+    else if(action==='print-report'){
+      const el2 = document.getElementById('print-report');
+      if(el2) el2.innerHTML = buildPrintReportHTML();
+      setTimeout(()=>{ try{ window.print(); }catch(e){} }, 60);
+    }
+    else if(action==='speak-quiz-q'){
+      if(!state.quiz) return;
+      const cur = state.quiz.questions[state.quiz.idx];
+      const text = cur.type==='yazili' ? cur.q : (cur.q + '. Seçenekler: ' + cur.opts.join(', '));
+      speak(text);
+    }
+    else if(action==='speak-explain'){
+      if(!state.quiz) return;
+      speak(state.quiz.questions[state.quiz.idx].explain || '');
+    }
+    else if(action==='speak-lesson'){
+      speak(TOPIC_LESSONS[el.dataset.key] || '');
+    }
+    else if(action==='next-question'){
+      const q = state.quiz;
+      if(q.idx < q.questions.length-1){ q.idx++; render(); }
+      else { submitQuiz(); }
+    }
+    else if(action==='quiz-done'){ state.quiz=null; state.view='home'; render(); }
+    else if(action==='pin-key'){
+      if(state.pinInput.length<4) state.pinInput += el.dataset.k;
+      if(state.pinInput.length===4){
+        if(state.pinInput===state.settings.pin){ state.parentUnlocked=true; state.pinInput=''; }
+        else { state.pinInput=''; }
+      }
+      render();
+    }
+    else if(action==='pin-back'){ state.pinInput = state.pinInput.slice(0,-1); render(); }
+    else if(action==='pin-clear'){ state.pinInput=''; render(); }
+    else if(action==='set-status'){ setStatus(el.dataset.subject, el.dataset.topic, el.dataset.status); }
+    else if(action==='set-level'){ writeLevel(el.dataset.subject, Number(el.dataset.level)); render(); }
+    else if(action==='save-journal'){
+      const ta = app.querySelector('#journal-textarea');
+      const text = ta ? ta.value.trim() : '';
+      writeJournal(todayStr(), text);
+      el.textContent = '✅ Kaydedildi';
+      setTimeout(()=>{ if(el.isConnected) el.textContent='💾 Kaydet'; }, 1500);
+    }
+    else if(action==='lock-parent'){ state.parentUnlocked=false; render(); }
+    else if(action==='change-pin'){
+      const np = prompt('Yeni 4 haneli PIN girin:');
+      if(np && /^[0-9]{4}$/.test(np)){ state.settings.pin = np; writeSettings(); alert('PIN güncellendi.'); }
+    }
+    else if(action==='reset-progress'){
+      if(confirm('Tüm ilerleme ve puanlar silinsin mi? Bu işlem geri alınamaz.')){
+        const progressKeys = Object.keys(state.progress);
+        const levelKeys = Object.keys(state.levels);
+        const masteryKeys = Object.keys(state.mastery);
+        state.progress = {}; state.stats = { points:0, streak:0, lastActiveDate:null, quizHistory:[], redemptions:[], writtenCorrect:0 };
+        state.levels = {}; state.ratings = {}; state.mastery = {};
+        writeStats();
+        render();
+        if(state.db){
+          progressKeys.forEach(k=>{ state.db.doc('progress/'+k).delete().catch(()=>{}); });
+          levelKeys.forEach(k=>{ state.db.doc('levels/'+k).delete().catch(()=>{}); });
+          masteryKeys.forEach(k=>{ state.db.doc('mastery/'+k).delete().catch(()=>{}); });
+        }
+      }
+    }
+    else if(action==='redeem-reward'){
+      const reward = state.rewards.find(r=>r.id===el.dataset.id);
+      if(reward) redeemReward(reward);
+    }
+    else if(action==='delete-reward'){ deleteReward(el.dataset.id); }
+    else if(action==='clear-redemptions'){ clearRedemptionLog(); }
+  });
+
+  app.addEventListener('submit', function(e){
+    const form = e.target.closest('[data-action-submit]');
+    if(!form) return;
+    e.preventDefault();
+    if(form.dataset.actionSubmit==='add-reward'){
+      const name = form.elements.rname.value.trim();
+      const emoji = form.elements.remoji.value.trim() || '🎁';
+      const cost = Number(form.elements.rcost.value);
+      if(name && cost>0){ addReward(name, emoji, cost); }
+    }
+  });
+
+  app.addEventListener('keydown', function(e){
+    if(e.key==='Enter' && e.target.classList.contains('text-answer')){
+      e.preventDefault();
+      const btn = app.querySelector('[data-action="submit-text-answer"]');
+      if(btn) btn.click();
+    }
+  });
+
+  /* ---------- boot ---------- */
+  async function boot(){
+    loadTheme();
+    try{
+      if(window.claude && window.claude.use){
+        state.db = await window.claude.use('db');
+      }
+    }catch(err){ state.db = null; }
+
+    // Yapay zekâ öğretmen: yoksa uygulama aynen çalışmaya devam eder, ilgili butonlar görünmez.
+    try{
+      if(window.claude && window.claude.use){
+        sampleFn = await window.claude.use('sample');
+      }
+    }catch(err){ sampleFn = null; }
+
+    if(state.db){
+      try{
+        const [progressSnap, levelsSnap, statsDoc, settingsDoc, sessionsSnap, rewardsSnap, journalSnap, masterySnap] = await Promise.all([
+          state.db.collection('progress').get(),
+          state.db.collection('levels').get(),
+          state.db.doc('meta/stats').get(),
+          state.db.doc('meta/settings').get(),
+          state.db.collection('sessions').get(),
+          state.db.collection('rewards').get(),
+          state.db.collection('journal').get(),
+          state.db.collection('mastery').get()
+        ]);
+        progressSnap.docs.forEach(d=>{ state.progress[d.id] = d.data(); });
+        levelsSnap.docs.forEach(d=>{
+          const data = d.data() || {};
+          if(data.level) state.levels[d.id] = data.level;
+          if(typeof data.rating==='number') state.ratings[d.id] = data.rating;
+        });
+        masterySnap.docs.forEach(d=>{
+          const data = d.data() || {};
+          state.mastery[d.id] = { score:0, seen:0, correct:0, streak:0, lastSeen:null, dueAt:null, ...data };
+        });
+        if(statsDoc.exists){ state.stats = { points:0, streak:0, lastActiveDate:null, quizHistory:[], redemptions:[], writtenCorrect:0, ...statsDoc.data() }; }
+        if(settingsDoc.exists){ state.settings = { pin:'0000', ...settingsDoc.data() }; }
+        sessionsSnap.docs.forEach(d=>{ const data=d.data(); state.sessions[d.id] = (data&&data.minutes)||0; });
+        journalSnap.docs.forEach(d=>{ const data=d.data(); state.journal[d.id] = (data&&data.text)||''; });
+        if(rewardsSnap.docs.length){
+          state.rewards = rewardsSnap.docs.map(d=>({ id:d.id, ...d.data() }));
+        } else {
+          state.rewards = REWARD_DEFAULTS.map((r,i)=>({ id:'seed'+i, ...r }));
+          state.rewards.forEach(r=>{ state.db.collection('rewards').doc(r.id).set({ name:r.name, emoji:r.emoji, cost:r.cost }).catch(()=>{}); });
+        }
+      }catch(err){ /* render with whatever we have */ }
+    } else {
+      state.rewards = REWARD_DEFAULTS.map((r,i)=>({ id:'seed'+i, ...r }));
+    }
+    render();
+  }
+  boot();
+})();
+</script>
